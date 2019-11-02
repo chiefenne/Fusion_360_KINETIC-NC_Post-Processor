@@ -221,9 +221,9 @@ function onOpen() {
   writeln("#101=0   (y-absolute machine coordinates)");
   writeln("#102=0   (z-absolute machine coordinates, safety height)");
   writeln('PRINT "x-offset = ";#100;"mm"');
-  writeln('ASKBOOL „Continue with x-offset“ I=2');
+  writeln('ASKBOOL "Continue with x-offset" I=2');
   writeln('IF #0=0 THEN');
-  writeln('  ASKFLT „Enter x-offset“ I=0.0 J=720.0');
+  writeln('  ASKFLT "Enter x-offset" I=0.0 J=720.0');
   writeln('  #100=#0');
   writeln('  PRINT "x-offset = ";#100;"mm"');
   writeln('ENDIF');
