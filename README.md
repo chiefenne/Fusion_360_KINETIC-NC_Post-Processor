@@ -13,7 +13,7 @@ Adding some commands to the post-processor is quite easy, as I needed to use onl
 
 ## Example
 
-Adding a section that is always written to the **\*.nc** file.
+Adding a section to [FUSION_360_KINETIC-NC_HIGH-Z_720T.cps](FUSION_360_KINETIC-NC_HIGH-Z_720T.cps)that is always written to the **\*.nc** file.
 
     writeln("");
     writeComment("Initial section");
