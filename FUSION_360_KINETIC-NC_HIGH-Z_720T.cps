@@ -217,9 +217,10 @@ function onOpen() {
   // chiefenne
   writeln("");
   writeComment("Initial section");
-  writeln("#100=#900 (x-absolute machine coordinates)");
-  writeln("#101=0   (y-absolute machine coordinates)");
-  writeln("#102=0   (z-absolute machine coordinates, safety height)");
+  writeln("G54 (needed here so that offsets are being read)");
+  writeln("#100=#900 (use x-offset of G54 for G53)");
+  writeln("#101=0   (safe y for G53)");
+  writeln("#102=0   (safe z for G53)");
   writeln('PRINT "x-offset = ";#100;"mm"');
   writeln('ASKBOOL "Continue with x-offset" I=2');
   writeln('IF #0=0 THEN');
