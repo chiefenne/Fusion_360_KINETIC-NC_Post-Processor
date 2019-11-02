@@ -54,7 +54,7 @@ The line:
 
     writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
 
-writes following into tzhe \*.nc file:
+writes following into the \*.nc file:
 
     N1000 T8 M6
 
@@ -62,20 +62,34 @@ Which mean command number 1000 (for example), tool number 8 (for example) and **
 
  * M98 &rarr; call subroutine
  * P1234 &rarr; label of the subroutine (caller syntax)
- * O1234:
+ * O1234: &rarr; label of the subroutine (subroutine function starts here)
+ * M99 &rarr; exit subroutine
 
- where Pxxx is the subroutine call and Oxxx: is the corresponding label in the \*.nc file.)
 
-    // subroutine
+    // subroutines
     writeln("");
     writeln("");
     writeComment("Subroutine 1234");
     writeln("O1234:");
-    writeln("G53 (Maschinennullpunkt als Referenz)");
-    writeln("G0 (Eilgang)");
-    writeln("Z=#102 (Sicherheitshoehe)");
+    writeln("G53 (machine coordinates)");
+    writeln("G0 (go fast)");
+    writeln("Z=#102 (safety height)");
     writeln("Y=#101");
     writeln("X=#100");
-    writeln("G54 (Werkstuecknullpunkt als Referenz)");
+    writeln("G54 (workpiece coordinates)");
     writeln("M99 (End Subroutine 1234)");
     writeln("");
+
+Which would render in the \*.nc file as (blank lines omitted):
+
+    // subroutines
+    (Subroutine 1234)
+    O1234:
+    G53 (machine coordinates)
+    G0 (go fast)
+    Z=#102 (safety height)
+    Y=#101
+    X=#100
+    G54 (workpiece coordinates)
+    M99 (End Subroutine 1234)
+    
