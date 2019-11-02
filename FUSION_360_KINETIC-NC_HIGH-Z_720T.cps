@@ -187,6 +187,7 @@ function onOpen() {
 
     var tools = getToolTable();
     if (tools.getNumberOfTools() > 0) {
+      // chiefenne
       writeln("");
       writeComment("Used tools:");
       for (var i = 0; i < tools.getNumberOfTools(); ++i) {
@@ -207,12 +208,12 @@ function onOpen() {
     }
   }
 
-  // chiefenne: 
+  // chiefenne
   writeln("");
   writeComment("Initial section");
-  writeln("#100=350 (x-absolut Maschinenkoordinaten)");
-  writeln("#101=0   (y-absolut Maschinenkoordinaten)");
-  writeln("#102=0   (z-absolut Maschinenkoordinaten, Sicherheitshöhe)");
+  writeln("#100=350 (x-absolute machine coordinates)");
+  writeln("#101=0   (y-absolute machine coordinates)");
+  writeln("#102=0   (z-absolute machine coordinates, safety height)");
   writeln("");
 
   // absolute coordinates and feed per min
@@ -869,15 +870,15 @@ function onClose() {
   writeln("");
   writeComment("Subroutine 1234");
   writeln("O1234:");
-  writeln("G53 (Maschinennullpunkt als Referenz)");
-  writeln("G0 (Eilgang)");
-  writeln("Z=#102 (Sicherheitshoehe)");
+  writeln("G53 (machine coordinates)");
+  writeln("G0 (go fast)");
+  writeln("Z=#102 (safety height)");
   writeln("Y=#101");
   writeln("X=#100");
-  writeln("G54 (Werkstuecknullpunkt als Referenz)");
+  writeln("G54 (workpiece coordinates)");
   writeln("M99 (End Subroutine 1234)");
   writeln("");
 
-  // commented out by chiefenne
+  // chiefenne
   // writeln("%");
 }
