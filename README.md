@@ -96,4 +96,12 @@ Which would render in the \*.nc file as (blank lines omitted):
     G54 (workpiece coordinates)
     M99 (End Subroutine 1234)
     
-In the same way more functionality can be added to the post-processor or different *dialects* of the same post-processor could be created.
+The subroutine uses the variables defined at the beginning of the \*.nc file. So I just need to update these variables once. Then for all subsequent tool changes there should be a safe path " to and from". When I use the same code but have a new workpiece clamped at another position, I agoin just update mainly the variable for the x-coordinate (#100).
+
+To make it even more convenient, the **#10x** variable could be set according to the values stored in the workpiece origin (for example after having defined the location of G54).
+
+In the same way more functionality can be added to the post-processor or different *dialects* of the same post-processor could be created depending on the requirements.
+
+## Pro tip
+
+In order to debug the code tick the "Open Nc-file in editor" option before saving. When the code change fails, the corresponding error message(s) are shown in the editor. Another indication that something went wrong, is an empty properties window at the lower right of the post-processor dialog.
