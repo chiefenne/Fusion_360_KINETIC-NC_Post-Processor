@@ -98,7 +98,7 @@ Which would render in the \*.nc file as (blank lines omitted):
     
 The subroutine uses the variables defined at the beginning of the \*.nc file. So I just need to update these variables once. Then for all subsequent tool changes there should be a safe path " to and from". When I use the same code but have a new workpiece clamped at another position, I agoin just update mainly the variable for the x-coordinate (#100).
 
-To make it even more convenient, the **#10x** variable could be set according to the values stored in the workpiece origin (for example after having defined the location of G54).
+To make it even more convenient, the **#10x** variable could be set according to the values stored in the workpiece origin (for example after having defined the offsets for G54).
 
 In the same way more functionality can be added to the post-processor or different *dialects* of the same post-processor could be created depending on the requirements.
 
