@@ -94,3 +94,4 @@ Which would render in the \*.nc file as (blank lines omitted):
     G54 (workpiece coordinates)
     M99 (End Subroutine 1234)
     
+In the same way more functionality can be added to the post-processor or different *dialects* of the same post-processor could be created.
