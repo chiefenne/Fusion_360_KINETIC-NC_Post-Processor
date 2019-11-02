@@ -41,7 +41,7 @@ And KINETIC-NC interprets this as a comment.
     writeln("#101=0   (y-absolute machine coordinates)");
     writeln("#102=0   (z-absolute machine coordinates, safety height)");
 
-Above lines add variables **#100, #101, #102** to the \*.nc file. The values stored in these variables can be used later in the \*.nc file, e.g. for traversing.
+Above lines add variables **#100, #101, #102** to the \*.nc file. The values stored in these variables can be used later in the \*.nc file, e.g. for traversing like so:
 
     G53 G0 Z=#102 Y=#101 X=#100
 
