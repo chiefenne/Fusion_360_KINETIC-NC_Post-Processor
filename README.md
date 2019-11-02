@@ -11,3 +11,23 @@ I added the some entries to the post-processor in order to make it more convenie
 
 Adding some commands to the post-processor is quite easy, as I needed to use only two already existing functions. The main function needed is **writeln()** which comes with the Autodesk JavaScript API and the second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is the comment format understood by KINETIC-NC).
 
+## Example
+
+Adding a section that is always written to the **\*.nc** file.
+
+    writeln("");
+    writeComment("Initial section");
+    writeln("#100=350 (x-absolute machine coordinates)");
+    writeln("#101=0   (y-absolute machine coordinates)");
+    writeln("#102=0   (z-absolute machine coordinates, safety height)");
+    writeln("");
+
+## Explanation
+
+    writeln("");
+Adds an empty line as string written is empty.
+
+    writeComment("Initial section");
+Write a comment line into the \*.nc file. The result in the file will lokk like this:
+
+    (Initial section)
