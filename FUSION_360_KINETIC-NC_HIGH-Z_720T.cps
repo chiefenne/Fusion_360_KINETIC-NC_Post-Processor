@@ -208,12 +208,25 @@ function onOpen() {
     }
   }
 
+/** From the KINETIC-NC reference manual section 20.11
+#900 bis #908 (die X-Achse in #900, Y in #901 usw.). Die Nummer des aktuellen Nullpunks
+ steht in #909 (0 = G53, 1 = G54 usw.). Die Variablen können geändert und danach durch L53
+  in den Speicher des aktuell gewählten Nullpunkts (G54 bis G59) gespeichert werden. 
+  G53 kann nicht verändert werden
+*/
   // chiefenne
   writeln("");
   writeComment("Initial section");
-  writeln("#100=350 (x-absolute machine coordinates)");
+  writeln("#100=#900 (x-absolute machine coordinates)");
   writeln("#101=0   (y-absolute machine coordinates)");
   writeln("#102=0   (z-absolute machine coordinates, safety height)");
+  writeln('PRINT "x-offset = ";#100;"mm"');
+  writeln('ASKBOOL „Continue with x-offset“ I=2');
+  writeln('IF #0=0 THEN');
+  writeln('  ASKFLT „Enter x-offset“ I=0.0 J=720.0');
+  writeln('  #100=#0');
+  writeln('  PRINT "x-offset = ";#100;"mm"');
+  writeln('ENDIF');
   writeln("");
 
   // absolute coordinates and feed per min
