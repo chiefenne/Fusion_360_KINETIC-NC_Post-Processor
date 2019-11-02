@@ -5,6 +5,6 @@ The post processor is based on the classical format [RS-274D](https://en.wikiped
 
 The reason why the Benzean post-processor works for the KINETIC-NC software is that the KINETIC-NC software is based on the BEAMICON2 software of Benezan.
 
-Thus I took above postprocessor and ran it successfully on FUSION 360 for my HIGH-Z S-720/T machine. 
+Thus I took above postprocessor and ran it successfully on FUSION 360 for my HIGH-Z S-720/T machine which is conrolled via the KINETIC-NC software. 
 
 I added the some entries to the post-processor in order to make it more convenient for my typical operations. The post-processor is written in JavaScript and the documentation of the existing classes, functions, etc. is described in the [Autodesk CAM Post Processor Documentation](https://cam.autodesk.com/posts/reference/index.html).
