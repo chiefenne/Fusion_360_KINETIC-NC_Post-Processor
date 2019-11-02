@@ -233,7 +233,7 @@ function onOpen() {
   writeComment("Absolute coordinates and feedrate in mm/min");
   writeBlock(gAbsIncModal.format(90), gFeedModeModal.format(94));
   
-  // chiefenne: ignored in KINETIC-NC
+  // chiefenne: G17 is ignored in KINETIC-NC
   //writeBlock(gPlaneModal.format(17));
 
   switch (unit) {
