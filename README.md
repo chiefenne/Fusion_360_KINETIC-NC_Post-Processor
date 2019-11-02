@@ -45,7 +45,7 @@ Above lines add variables **#100, #101, #102** to the \*.nc file. The values sto
 
     G53 G0 Z=#102 Y=#101 X=#100
 
-In the past I added thoese lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps.  For my typical setups I then just need to adopt the initial x-coordinate. When I need to change tools the spindle drives back to machine zero and then comes back to the workpiece. So I added this safe path automatically before and after each tool change like:
+In the past I added thoese lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps.  For my typical setups I then just need to adopt the initial x-coordinate. When I need to change tools the spindle drives back to machine zero and then comes back to the workpiece. So I added a safe path (by calling a subroutine which moves the spindle according to these variables) automatically before and after each tool change like:
 
     // go to safe position before doing tool change
     writeln('M98 P1234 (call subroutine 1234)');
