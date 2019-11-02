@@ -13,7 +13,7 @@ Adding some commands to the post-processor is quite easy, as I needed to use onl
 
 ## Example
 
-Adding a section to [FUSION_360_KINETIC-NC_HIGH-Z_720T.cps](FUSION_360_KINETIC-NC_HIGH-Z_720T.cps)that is always written to the **\*.nc** file.
+Adding a section to [FUSION_360_KINETIC-NC_HIGH-Z_720T.cps](FUSION_360_KINETIC-NC_HIGH-Z_720T.cps) which is always written to the **\*.nc** file:
 
     writeln("");
     writeComment("Initial section");
@@ -25,9 +25,22 @@ Adding a section to [FUSION_360_KINETIC-NC_HIGH-Z_720T.cps](FUSION_360_KINETIC-N
 ## Explanation
 
     writeln("");
-Adds an empty line as string written is empty.
+Adds an empty line because the string **""** is empty.
 
     writeComment("Initial section");
-Write a comment line into the \*.nc file. The result in the file will lokk like this:
+
+Write a comment line into the \*.nc file. The result in the file will look like this:
 
     (Initial section)
+
+And KINETIC-NC interprets this as a comment.
+
+    writeln("#100=350 (x-absolute machine coordinates)");
+    writeln("#101=0   (y-absolute machine coordinates)");
+    writeln("#102=0   (z-absolute machine coordinates, safety height)");
+
+Above lines add variables **#100, #101, #102** to the \*.nc file. The values stored in these variables can be used later in the \*.nc file, e.g. for traversing.
+
+    G53 G0 Z=#102 Y=#101 X=#100
+
+In the past I added thoese lines always manually to the \*.nc file in order to move safely to the workpiece without crashing into any clamps.
