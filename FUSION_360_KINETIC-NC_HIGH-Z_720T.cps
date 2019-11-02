@@ -98,6 +98,9 @@ var gRetractModal = createModal({}, gFormat); // modal group 10 // G98-99
 
 var WARNING_WORK_OFFSET = 0;
 
+// chiefenne: add variable for jump labels
+var jumpLabel = 0;
+
 // collected state
 var sequenceNumber;
 var currentWorkOffset;
@@ -387,6 +390,14 @@ function onSection() {
 
   writeln("");
   
+  // chiefenne: write jump label between each section
+  // this can later be used to jump to certain sections only
+  jumpLabel += 1;
+  var jumpLabelStr = ('000' + jumpLabel).slice(-4)
+  jumpLabelStr = "P".concat(jumpLabelStr, ":");
+  writeln(jumpLabelStr);
+  writeln("");
+
   if (hasParameter("operation-comment")) {
     var comment = getParameter("operation-comment");
     if (comment) {
