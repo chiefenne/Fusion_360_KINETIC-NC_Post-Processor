@@ -65,6 +65,7 @@ Which mean command number 1000 (for example), tool number 8 (for example) and **
  * O1234: &rarr; label of the subroutine (subroutine function starts here)
  * M99 &rarr; exit subroutine
 
+The calls for adding the subroutine G-code within the post-processor look like this:
 
     // subroutines
     writeln("");
