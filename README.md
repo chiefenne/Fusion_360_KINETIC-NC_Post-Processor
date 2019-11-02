@@ -31,7 +31,7 @@ Adds an empty line because the string **""** is empty.
 
     writeComment("Initial section");
 
-Write a comment line into the \*.nc file. The result in the file will look like this:
+Write a comment line into the \*.nc file. The result in the file will look like this (the round brackets are added be the function *writeComment* to the text):
 
     (Initial section)
 
