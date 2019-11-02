@@ -104,4 +104,4 @@ In the same way more functionality can be added to the post-processor or differe
 
 ## Pro tip
 
-In order to debug the code in FUSION 360, tick the "Open Nc-file in editor" option before saving. When the code change fails, the corresponding error message(s) are shown in the editor. Another indication that something went wrong, is an empty properties window at the lower right of the post-processor dialog.
+In order to debug the code in FUSION 360, tick the "Open Nc-file in editor" option in the post-processor before saving. When the code change fails, the corresponding error message(s) are shown in the editor. Another indication that something went wrong, is an empty properties window at the lower right of the post-processor dialog.
