@@ -43,4 +43,39 @@ Above lines add variables **#100, #101, #102** to the \*.nc file. The values sto
 
     G53 G0 Z=#102 Y=#101 X=#100
 
-In the past I added thoese lines always manually to the \*.nc file in order to move safely to the workpiece without crashing into any clamps.
+In the past I added thoese lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps.  For my typical setups I then just need to adopt the initial x-coordinate. When I need to change tools the spindle drives back to machine zero and then comes back to the workpiece. So I added this safe path automatically before and after each tool change like:
+
+    // go to safe position before doing tool change
+    writeln('M98 P1234 (call subroutine 1234)');
+    writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
+    writeln('M98 P1234 (call subroutine 1234)');
+
+The line:
+
+    writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
+
+writes following into tzhe \*.nc file:
+
+    N1000 T8 M6
+
+Which mean command number 1000 (for example), tool number 8 (for example) and **M6** is tool change. So I know when the post-processor writes this line a tool-change will happen. Thus I surround it by two lines which trigger a subroutine that performas the safe movement. KINETIC-NC allows a subroutine syntax:
+
+ * M98 &rarr; call subroutine
+ * P1234 &rarr; label of the subroutine (caller syntax)
+ * O1234:
+
+ where Pxxx is the subroutine call and Oxxx: is the corresponding label in the \*.nc file.)
+
+    // subroutine
+    writeln("");
+    writeln("");
+    writeComment("Subroutine 1234");
+    writeln("O1234:");
+    writeln("G53 (Maschinennullpunkt als Referenz)");
+    writeln("G0 (Eilgang)");
+    writeln("Z=#102 (Sicherheitshoehe)");
+    writeln("Y=#101");
+    writeln("X=#100");
+    writeln("G54 (Werkstuecknullpunkt als Referenz)");
+    writeln("M99 (End Subroutine 1234)");
+    writeln("");
