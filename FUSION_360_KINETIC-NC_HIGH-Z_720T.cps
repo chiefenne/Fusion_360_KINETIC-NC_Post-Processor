@@ -192,7 +192,7 @@ function onOpen() {
     if (tools.getNumberOfTools() > 0) {
       // chiefenne
       writeln("");
-      writeComment("Used tools:");
+      writeComment("Tools");
       for (var i = 0; i < tools.getNumberOfTools(); ++i) {
         var tool = tools.getTool(i);
         var comment = "T" + toolFormat.format(tool.number) + " " +
