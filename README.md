@@ -13,6 +13,18 @@ I did some modifications to the post-processor in order to make it more convenie
 
 Adding some commands to the post-processor is quite easy, as I needed to use only two already existing functions. The main function needed is [**writeln()**](https://cam.autodesk.com/posts/reference/classPostProcessor.html#aeb90bf455982d43746741f6dce58279c) which comes with the Autodesk JavaScript API and the second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is the comment format understood by KINETIC-NC).
 
+## Features
+
+ * Initial section
+  - Safe tool position before and after tool change
+  - Safe tool position at program end
+  - Implemented via subroutine 
+ * Jump labels between sections
+  - Allows to execute individual sections only
+ * Remove entries not used by KINETIC-NC
+  - Remove G17
+  - Remove last line **%**
+
 ## Example
 
 Adding a section to [FUSION_360_KINETIC-NC_HIGH-Z_720T.cps](FUSION_360_KINETIC-NC_HIGH-Z_720T.cps) which will always be written to the **\*.nc** file when using this post-processor:
