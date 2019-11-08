@@ -395,6 +395,11 @@ function onSection() {
   jumpLabel += 1;
   var jumpLabelStr = ('000' + jumpLabel).slice(-4)
   jumpLabelStr = "P".concat(jumpLabelStr, ":");
+  if (jumpLabel = 1) {
+    writeln("(Example for jump to label and skip everything inbetween)");
+    writeln("(SKIP P0003)");
+    writeln("");
+  }
   writeln(jumpLabelStr);
   writeln("");
 
