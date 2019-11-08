@@ -393,13 +393,14 @@ function onSection() {
   // chiefenne: write jump label between each section
   // this can later be used to jump to certain sections only
   jumpLabel += 1;
+  skipLabel = jumpLabel + 1;
   var jumpLabelStr = ('000' + jumpLabel).slice(-4)
   jumpLabelStr = "P".concat(jumpLabelStr, ":");
-  if (jumpLabel = 1) {
-    writeln("(Example for jump to label and skip everything inbetween)");
-    writeln("(SKIP P0003)");
-    writeln("");
-  }
+  var skipLabelStr = ('000' + skipLabel).slice(-4)
+  skipLabelStr = "SKIP P".concat(skipLabelStr, ":");
+  writeln("(Uncomment to skip everything until specifiedlabel)");
+  writeln("(SKIP P0003)");
+  writeln("");
   writeln(jumpLabelStr);
   writeln("");
 

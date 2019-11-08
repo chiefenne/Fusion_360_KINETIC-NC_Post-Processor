@@ -30,7 +30,7 @@ N10 G90 G94
 N15 G21
 N20 G53 G0 Z0
 
-(Example for jump to label and skip everything inbetween)
+(Uncomment to skip everything until specifiedlabel)
 (SKIP P0003)
 
 P0001:
@@ -69,7 +69,7 @@ N155 G17
 N160 M5
 N165 G53 G0 Z0
 
-(Example for jump to label and skip everything inbetween)
+(Uncomment to skip everything until specifiedlabel)
 (SKIP P0003)
 
 P0002:
@@ -137,10 +137,10 @@ N455 G18 G3 X10.25 Z-8.7 I0 K0.3
 N460 G0 Z18
 N465 G17
 
-(Example for jump to label and skip everything inbetween)
+(Uncomment to skip everything until specifiedlabel)
 (SKIP P0003)
 
-P0002:
+P0003:
 
 (Hole M8)
 N470 M9
@@ -226,10 +226,10 @@ N865 G18 G3 X41.15 Z-8.7 I0 K0.3
 N870 G0 Z18
 N875 G17
 
-(Example for jump to label and skip everything inbetween)
+(Uncomment to skip everything until specifiedlabel)
 (SKIP P0003)
 
-P0002:
+P0004:
 
 (Hole 1/2-20 UNF)
 N880 M9
@@ -344,10 +344,10 @@ N1420 G17
 N1425 M5
 N1430 G53 G0 Z0
 
-(Example for jump to label and skip everything inbetween)
+(Uncomment to skip everything until specifiedlabel)
 (SKIP P0003)
 
-P0002:
+P0005:
 
 (Chamfer)
 M98 P1234 (call subroutine 1234)
@@ -376,10 +376,10 @@ N1540 G3 X39.0095 Y13.0842 I-1.15 J0
 N1545 G1 X39.9053 Y12.5559
 N1550 G0 Z15
 
-(Example for jump to label and skip everything inbetween)
+(Uncomment to skip everything until specifiedlabel)
 (SKIP P0003)
 
-P0002:
+P0006:
 
 (Bohren1)
 N1560 M9
@@ -392,10 +392,10 @@ N1595 G0 X10 Y12.5 Z15
 N1605 M5
 N1610 G53 G0 Z0
 
-(Example for jump to label and skip everything inbetween)
+(Uncomment to skip everything until specifiedlabel)
 (SKIP P0003)
 
-P0002:
+P0007:
 
 (Thread 1/2-20 UNF)
 M98 P1234 (call subroutine 1234)
@@ -477,10 +477,10 @@ N1980 G0 Z15
 N1990 M5
 N1995 G53 G0 Z0
 
-(Example for jump to label and skip everything inbetween)
+(Uncomment to skip everything until specifiedlabel)
 (SKIP P0003)
 
-P0002:
+P0008:
 
 (Thread M8)
 M98 P1234 (call subroutine 1234)
@@ -538,10 +538,10 @@ N2245 G3 X40.1758 Y14.3355 I-0.1236 J-0.3804 F120
 N2250 G1 X40 Y12.5
 N2255 G0 Z15
 
-(Example for jump to label and skip everything inbetween)
+(Uncomment to skip everything until specifiedlabel)
 (SKIP P0003)
 
-P0002:
+P0009:
 
 (Thread M6)
 N2265 M9
@@ -594,10 +594,10 @@ N2495 G0 Z15
 N2505 M5
 N2510 G53 G0 Z0
 
-(Example for jump to label and skip everything inbetween)
+(Uncomment to skip everything until specifiedlabel)
 (SKIP P0003)
 
-P0002:
+P0010:
 
 (Engrave Text)
 M98 P1234 (call subroutine 1234)
