@@ -17,7 +17,7 @@ legal = "Copyright (C) 2012-2016 by Autodesk, Inc.";
 certificationLevel = 2;
 minimumRevision = 24000;
 
-longDescription = "Generic post for the RS-274D format. Most CNCs will use a format very similar to RS-274D. When making a post for a new CNC control this post will often serve as the basis.";
+longDescription = "Generic post for the RS-274D format. Adapted for the KINETIC-NC software.";
 
 extension = "nc";
 setCodePage("ascii");
@@ -395,11 +395,12 @@ function onSection() {
   jumpLabel += 1;
   skipLabel = jumpLabel + 1;
   var jumpLabelStr = ('000' + jumpLabel).slice(-4)
-  jumpLabelStr = "P".concat(jumpLabelStr, ":");
-  var skipLabelStr = ('000' + skipLabel).slice(-4)
-  skipLabelStr = "SKIP P".concat(skipLabelStr, ":");
-  writeln("(Uncomment to skip everything until specifiedlabel)");
-  writeln("(SKIP P0003)");
+  jumpLabelStr = "(L".concat(jumpLabelStr, ":)");
+  var skipLabelStr = ('L000' + skipLabel).slice(-4)
+  skipLabelStr = "SKIP ".concat(skipLabelStr);
+  writeln("(Uncomment to skip until specified label)");
+  writeln("(Skip label must exist, than jump label is accepted)");
+  writeln("(SKIP L0000)");
   writeln("");
   writeln(jumpLabelStr);
   writeln("");
