@@ -76,8 +76,7 @@ Which means command number 1000 (for example), tool number 8 (for example) and *
 
 <div>
   <strong>NOTE: </strong>A tool change requires the tool to be measured again. For this I added the G79 command to the M66.txt macro.
-</div>
-
+</div><br>
 
 KINETIC-NC allows following subroutine syntax:
 
