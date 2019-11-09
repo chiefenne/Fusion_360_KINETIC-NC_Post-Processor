@@ -72,7 +72,11 @@ writes following into the \*.nc file:
 
     N1000 T8 M6
 
-Which means command number 1000 (for example), tool number 8 (for example) and **M6** is tool change. So I know when the post-processor writes this line a tool-change will happen. Thus I surround it (as shown above) by two lines which trigger a subroutine that performs the safe traversal. KINETIC-NC allows following subroutine syntax:
+Which means command number 1000 (for example), tool number 8 (for example) and **M6** is tool change. So I know when the post-processor writes this line a tool-change will happen. Thus I surround it (as shown above) by two lines which trigger a subroutine that performs the safe traversal.
+
+<p class="callout info">NOTE: The tool change requires the tool to be measured again. For this I added the G79 command to the M66.txt macro.</p>
+
+KINETIC-NC allows following subroutine syntax:
 
  * M98 &rarr; call subroutine
  * P1234 &rarr; label of the subroutine (caller syntax)
