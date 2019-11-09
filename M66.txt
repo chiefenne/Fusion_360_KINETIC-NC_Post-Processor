@@ -1,0 +1,27 @@
+﻿#NAME M66.txt #LABEL "manual toolchange"
+#950 (aktives Werkzeug)
+
+%
+M9 (Kühlung aus)
+M5 (Spindel aus)
+IF #920<>#950 THEN (Überprüfen ob ein Werkzeugwechsel nötig ist)
+  G28  (auf Parkposition fahren)
+  PRINT "Info! Please insert tool no. ";T
+  ASKBOOL "Please confirm toolchange" I=1
+  #950=T (neue Werkzeugnummer setzen)
+  G79
+ENDIF
+RETURN
+
+Simulation:
+M9
+M5
+IF #920<>#950 THEN
+  G28
+  PRINT "Please insert tool no. ";T
+  ASKBOOL "Confirm toolchange" I=1
+  #950=T
+  G79
+ENDIF
+RETURN
+
