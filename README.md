@@ -24,7 +24,7 @@ Adding some commands to the post-processor is quite easy, as I needed to use onl
  * Remove entries not understood by KINETIC-NC
    - Remove **%** from last line
 
-## Example
+## Example code snippet
 
 Adding a section to [FUSION_360_KINETIC-NC_HIGH-Z_720T.cps](FUSION_360_KINETIC-NC_HIGH-Z_720T.cps) which will always be written to the **\*.nc** file when using this post-processor:
 
@@ -134,6 +134,31 @@ Which would render in the \*.nc file as (blank lines omitted):
 The subroutine uses the variables defined at the beginning of the \*.nc file. So I just need to update these variables once. Then for all subsequent tool changes there should be a safe path " to and from". When I use the same code but have a new workpiece clamped at another position, I again just update the G54 offsets.
 
 In the same way more functionality can be added to the post-processor or different *dialects* of the same post-processor could be created depending on the requirements.
+
+## Example for using the jump labels
+
+KINETIC-NC allows skipping portions of the code by using the **SKIP** command. This comes handy when in a longer NC program a certain section should be done later again, but some other operations not. In order to support this upfront, the respective code is added by the post-processor as comments, so that it just has to be uncommented when being used.
+
+**NOTE:** A label cannot exist on its own unless it has been defined in by the SKIP command before.
+
+Following lines show an example of how this is prepared in the G-code by the post-processor:
+
+    (Uncomment to skip until specified label)
+    (Skip label must exist, than jump label is accepted)
+    (SKIP L0001)
+    ...
+    ...
+    ....
+    (L0001:)
+
+If needed the code can be activated by editing the code like:
+
+    SKIP L0001
+    ...
+    ...
+    ....
+    L0001:
+
 
 ## Pro tip
 
