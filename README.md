@@ -160,6 +160,10 @@ If needed the code can be activated by editing the code like:
     L0001:
 
 
+The code between the SKIP command and the label is not executed.
+
+**NOTE:** The colon is needed only at the label itself. In the line where the SKIP command is, it is not allowed.
+
 ## Pro tip
 
 In order to debug the code in FUSION 360, tick the "Open Nc-file in editor" option in the post-processor before saving. When the code change fails, the corresponding error message(s) are shown in the editor. Another indication that something went wrong, is an empty properties window at the lower right of the post-processor dialog.
