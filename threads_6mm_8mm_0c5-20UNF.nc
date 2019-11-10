@@ -38,9 +38,11 @@ N25 G53 G0 Z0
 (L0001:)
 
 (Face)
+(Go to safe position before tool change)
 M98 P1234 (call subroutine 1234)
 N30 M9
 N35 T18 M6
+(Go to safe position after tool change)
 M98 P1234 (call subroutine 1234)
 (Carbide End Mill 10mm)
 N40 S5000 M3
@@ -77,9 +79,11 @@ N155 G53 G0 Z0
 (L0002:)
 
 (Hole M6)
+(Go to safe position before tool change)
 M98 P1234 (call subroutine 1234)
 N160 M9
 N165 T21 M6
+(Go to safe position after tool change)
 M98 P1234 (call subroutine 1234)
 (3.0mm ALU 2-Flute)
 N170 S30000 M3
@@ -401,9 +405,11 @@ N1600 G53 G0 Z0
 (L0005:)
 
 (Chamfer)
+(Go to safe position before tool change)
 M98 P1234 (call subroutine 1234)
 N1605 M9
 N1610 T13 M6
+(Go to safe position after tool change)
 M98 P1234 (call subroutine 1234)
 N1615 S5000 M3
 N1620 G54
@@ -457,9 +463,11 @@ N1780 G53 G0 Z0
 (L0007:)
 
 (Thread 1/2-20 UNF)
+(Go to safe position before tool change)
 M98 P1234 (call subroutine 1234)
 N1785 M9
 N1790 T8 M6
+(Go to safe position after tool change)
 M98 P1234 (call subroutine 1234)
 (Gewindewirbler M10 - M16)
 N1795 S10000 M3
@@ -558,9 +566,11 @@ N2225 G53 G0 Z0
 (L0008:)
 
 (Thread M8)
+(Go to safe position before tool change)
 M98 P1234 (call subroutine 1234)
 N2230 M9
 N2235 T7 M6
+(Go to safe position after tool change)
 M98 P1234 (call subroutine 1234)
 (Gewindewirbler M5 - M10)
 N2240 S14000 M3
@@ -711,9 +721,11 @@ N2880 G53 G0 Z0
 (L0010:)
 
 (Engrave Text)
+(Go to safe position before tool change)
 M98 P1234 (call subroutine 1234)
 N2885 M9
 N2890 T3 M6
+(Go to safe position after tool change)
 M98 P1234 (call subroutine 1234)
 (Gravierstichel 30?)
 N2895 S15000 M3
@@ -1750,9 +1762,11 @@ N8015 G53 G0 Z0
 (L0011:)
 
 (Contour)
+(Go to safe position before tool change)
 M98 P1234 (call subroutine 1234)
 N8020 M9
 N8025 T21 M6
+(Go to safe position after tool change)
 M98 P1234 (call subroutine 1234)
 (3.0mm ALU 2-Flute)
 N8030 S30000 M3
