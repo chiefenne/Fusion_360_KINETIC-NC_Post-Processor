@@ -89,6 +89,15 @@ So I added a safe path (by calling a subroutine which moves the spindle accordin
     writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
     writeln('M98 P1234 (call subroutine 1234)');
 
+In the code this renders to:
+
+    M98 P1234 (call subroutine 1234)
+    N25 M9
+    N30 T18 M6
+    M98 P1234 (call subroutine 1234)
+
+As can be seen also the coolant off (M9) needed to be wrapped. Found this by testing.
+
 **NOTE:** A tool change requires the tool to be measured again. For this I added the G79 command to the [M66](M66.txt) macro, which resides in the following folder on the PC:
 
     C:\ProgramData\KinetiC-NC\macros
