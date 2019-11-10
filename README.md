@@ -117,7 +117,7 @@ In the code this renders to:
 M98 P1234 (call subroutine 1234)
 N25 M9
 N30 T18 M6
-(Go to safe position before after change)
+(Go to safe position after tool change)
 M98 P1234 (call subroutine 1234)
 ```
 
