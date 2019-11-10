@@ -102,18 +102,22 @@ Which means command number 1000 (for example), tool number 8 (for example) and *
 So I added a safe path (by calling a subroutine which moves the spindle according to these variables) automatically before and after each tool change like:
 
 ```JavaScript
-// go to safe position before doing tool change
+writeComment('Go to safe position before tool change');
 writeln('M98 P1234 (call subroutine 1234)');
+onCommand(COMMAND_COOLANT_OFF);
 writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
+writeComment('Go to safe position after tool change');
 writeln('M98 P1234 (call subroutine 1234)');
 ```
 
 In the code this renders to:
 
 ```G-code
+(Go to safe position before tool change)
 M98 P1234 (call subroutine 1234)
 N25 M9
 N30 T18 M6
+(Go to safe position before after change)
 M98 P1234 (call subroutine 1234)
 ```
 
