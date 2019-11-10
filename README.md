@@ -183,7 +183,7 @@ KINETIC-NC allows loops over portions of the G-code. In order to facilitate this
 
 The following code snippet from the thread example file shows this:
     
-    '''G-code
+    ```G-code
     (Chamfer)
     M98 P1234 (call subroutine 1234)
     N1605 M9
@@ -213,7 +213,7 @@ The following code snippet from the thread example file shows this:
     N1715 G1 X39.6752 Y13.0045
     N1720 G0 Z15
     NEXT
-    '''
+    ```
 
 Just change the number after the **REPEAT** keyword from **1** to a bigger number and the section should be executed the respective number of times.
 
