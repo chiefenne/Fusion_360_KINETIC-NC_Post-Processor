@@ -102,7 +102,7 @@ As can be seen also the coolant off (M9) needed to be wrapped. Found this by tes
 
     C:\ProgramData\KinetiC-NC\macros
 
-In KINETIC-NC the M66 macro is called when there is an M6 command (tool change) in the G-code and the machine has no automatic tool change capability. **So in order for this version of the post-processor to work smoothely you need to update your M66.txt accordingly.**
+In KINETIC-NC the M66 macro is called when there is an M6 command (tool change) in the G-code and the machine has no automatic tool change capability. **So in order for this version of the post-processor to work smoothly you need to update your M66.txt accordingly.**
 
 ## Subroutines
 
