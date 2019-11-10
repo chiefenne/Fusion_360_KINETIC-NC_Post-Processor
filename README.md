@@ -22,7 +22,6 @@ Adding some commands to the post-processor is quite easy, as I needed to use onl
  * Jump labels between sections
    - Allows to execute individual sections only
  * Remove entries not used by KINETIC-NC
-   - Remove G17
    - Remove last line **%**
 
 ## Example
