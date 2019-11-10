@@ -184,41 +184,36 @@ KINETIC-NC allows loops over portions of the G-code. In order to facilitate this
 The following code snippet from the thread example file shows this:
     
 ```G-code
-    N1625 M9
-    N1635 G0 X27.95 Y12.5
-    N1640 G0 G43 Z15 H13
+(Chamfer)
+M98 P1234 (call subroutine 1234)
+N1605 M9
+N1610 T13 M6
+M98 P1234 (call subroutine 1234)
+N1615 S5000 M3
+N1620 G54
+(Edit repeat count according to needs)
+REPEAT=1
+N1625 M9
+N1635 G0 X27.95 Y12.5
+N1640 G0 G43 Z15 H13
+N1645 G0 Z5
+N1650 G1 Z-2.5 F333.3
+N1655 G1 X28.75 F1000
+N1660 G3 X21.25 I-3.75 J0
+N1665 G3 X28.75 I3.75 J0
+N1670 G3 X27.6126 Y15.1901 I-3.75 J0
+N1675 G1 X27.0553 Y14.6162
+N1680 G0 Z5
+N1685 G0 X40.6 Y12.5
+N1690 G1 Z-2.5 F333.3
+N1695 G1 X41.4 F1000
+N1700 G3 X38.6 I-1.4 J0
+N1705 G3 X41.4 I1.4 J0
+N1710 G3 X39.2421 Y13.6771 I-1.4 J0
+N1715 G1 X39.6752 Y13.0045
+N1720 G0 Z15
+NEXT
 ```
-
-
-    (Chamfer)
-    M98 P1234 (call subroutine 1234)
-    N1605 M9
-    N1610 T13 M6
-    M98 P1234 (call subroutine 1234)
-    N1615 S5000 M3
-    N1620 G54
-    (Edit repeat count according to needs)
-    REPEAT=1
-    N1625 M9
-    N1635 G0 X27.95 Y12.5
-    N1640 G0 G43 Z15 H13
-    N1645 G0 Z5
-    N1650 G1 Z-2.5 F333.3
-    N1655 G1 X28.75 F1000
-    N1660 G3 X21.25 I-3.75 J0
-    N1665 G3 X28.75 I3.75 J0
-    N1670 G3 X27.6126 Y15.1901 I-3.75 J0
-    N1675 G1 X27.0553 Y14.6162
-    N1680 G0 Z5
-    N1685 G0 X40.6 Y12.5
-    N1690 G1 Z-2.5 F333.3
-    N1695 G1 X41.4 F1000
-    N1700 G3 X38.6 I-1.4 J0
-    N1705 G3 X41.4 I1.4 J0
-    N1710 G3 X39.2421 Y13.6771 I-1.4 J0
-    N1715 G1 X39.6752 Y13.0045
-    N1720 G0 Z15
-    NEXT
 
 Just change the number after the **REPEAT** keyword from **1** to a bigger number and the section should be executed the respective number of times.
 
