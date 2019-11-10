@@ -49,7 +49,10 @@ writeln("");
 
 ## Explanation
 
-    writeln("");
+```JavaScript
+writeln("");
+```
+
 Adds an empty line because the string **""** is empty.
 
     writeComment("Initial section");
