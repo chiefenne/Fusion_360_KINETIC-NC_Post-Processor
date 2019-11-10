@@ -434,6 +434,7 @@ function onSection() {
     if (tool.comment) {
       writeComment(tool.comment);
     }
+
     var showToolZMin = false;
     if (showToolZMin) {
       if (is3D()) {
@@ -534,6 +535,10 @@ function onSection() {
     setRotation(remaining);
   }
 
+  // chiefenne: prepare repeat of section
+  writeComment('(Edit repeat count according to needs)');
+  writeln('REPEAT=1');
+
   // set coolant after we have positioned at Z
   {
     var c = mapCoolantTable.lookup(tool.coolant);
@@ -585,7 +590,7 @@ function onSection() {
       xOutput.format(initialPosition.x),
       yOutput.format(initialPosition.y)
     );
-  }
+  } 
 }
 
 function onDwell(seconds) {
@@ -864,6 +869,11 @@ function onCommand(command) {
 
 function onSectionEnd() {
   writeBlock(gPlaneModal.format(17));
+
+  // chiefenne: prepare repeat of section
+  writeln('NEXT');
+
+
   forceAny();
 }
 
