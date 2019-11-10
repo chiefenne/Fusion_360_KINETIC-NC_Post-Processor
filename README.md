@@ -56,19 +56,23 @@ Adds an empty line because the string **""** is empty.
 
 Write a comment line into the \*.nc file. The result in the file will look like this (the round brackets are added be the function *writeComment* to the text):
 
-    (Initial section)
+```G-code
+(Initial section)
+```
 
 And KINETIC-NC interprets this as a comment.
-
-    writeln("G54 (needed here so that offsets are being read)");
-    writeln("#100=#900 (use x-offset of G54 for G53)");
-    writeln("#101=0   (safe y for G53)");
-    writeln("#102=0   (safe z for G53)");
-
+```JavaScript
+writeln("G54 (needed here so that offsets are being read)");
+writeln("#100=#900 (use x-offset of G54 for G53)");
+writeln("#101=0   (safe y for G53)");
+writeln("#102=0   (safe z for G53)");
+```
 
 Above lines add variables **#100, #101, #102** to the \*.nc file. The values stored in these variables can be used later in the \*.nc file, e.g. for traversing like so:
 
-    G53 G0 Z=#102 Y=#101 X=#100
+```G-code
+G53 G0 Z=#102 Y=#101 X=#100
+```
 
 In the past I added thoese lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps. For my typical setups I then just need to adapt the initial x-coordinate in the initial section.
 
@@ -78,7 +82,9 @@ When the G-code requests to change the tool the spindle needs to drive back to m
 
 This line from the original post-processor:
 
-    writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
+```JavaScript
+writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
+```
 
 writes the following into the \*.nc file:
 
@@ -90,10 +96,12 @@ Which means command number 1000 (for example), tool number 8 (for example) and *
 
 So I added a safe path (by calling a subroutine which moves the spindle according to these variables) automatically before and after each tool change like:
 
-    // go to safe position before doing tool change
-    writeln('M98 P1234 (call subroutine 1234)');
-    writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
-    writeln('M98 P1234 (call subroutine 1234)');
+```JavaScript
+// go to safe position before doing tool change
+writeln('M98 P1234 (call subroutine 1234)');
+writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
+writeln('M98 P1234 (call subroutine 1234)');
+```
 
 In the code this renders to:
 
@@ -123,19 +131,21 @@ KINETIC-NC allows following subroutine syntax:
 
 The calls for adding the subroutine G-code within the post-processor look like this:
 
-    // subroutines
-    writeln("");
-    writeln("");
-    writeComment("Subroutine 1234");
-    writeln("O1234:");
-    writeln("G53 (machine coordinates)");
-    writeln("G0 (go fast)");
-    writeln("Z=#102 (safety height)");
-    writeln("Y=#101");
-    writeln("X=#100");
-    writeln("G54 (workpiece coordinates)");
-    writeln("M99 (End Subroutine 1234)");
-    writeln("");
+```JavaScript
+// subroutines
+writeln("");
+writeln("");
+writeComment("Subroutine 1234");
+writeln("O1234:");
+writeln("G53 (machine coordinates)");
+writeln("G0 (go fast)");
+writeln("Z=#102 (safety height)");
+writeln("Y=#101");
+writeln("X=#100");
+writeln("G54 (workpiece coordinates)");
+writeln("M99 (End Subroutine 1234)");
+writeln("");
+```
 
 Which would render in the \*.nc file as (blank lines omitted):
 
