@@ -95,6 +95,8 @@ So I added a safe path (by calling a subroutine which moves the spindle accordin
 
 In KINETIC-NC the M66 macro is called when there is an M6 command (tool change) in the G-code and the machine has no automatic tool change capability.
 
+## Subroutines
+
 KINETIC-NC allows following subroutine syntax:
 
  * M98 &rarr; call subroutine
