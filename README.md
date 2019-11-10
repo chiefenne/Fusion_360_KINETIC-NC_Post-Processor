@@ -110,7 +110,7 @@ writeComment('Go to safe position after tool change');
 writeln('M98 P1234 (call subroutine 1234)');
 ```
 
-In the code this renders to:
+In the G-code this renders to:
 
 ```G-code
 (Go to safe position before tool change)
