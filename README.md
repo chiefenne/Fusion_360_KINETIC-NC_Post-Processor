@@ -59,29 +59,29 @@ Adds an empty line because the string **""** is empty.
 writeComment("Initial section");
 ```
 
-Write a comment line into the \*.nc file. The result in the file will look like this (the round brackets are added be the function *writeComment* to the text):
+Write a comment line into the \*.nc file. The result in the file will look like this (the round brackets are added be the function *writeComment* to the text) and KINETIC-NC interprets this as a comment:
 
 ```G-code
 (Initial section)
 ```
+Below lines add variables **#100, #101, #102** to the \*.nc file:
 
-And KINETIC-NC interprets this as a comment.
 ```JavaScript
 writeln("G54 (needed here so that offsets are being read)");
 writeln("#100=#900 (use x-offset of G54 for G53)");
 writeln("#101=0   (safe y for G53)");
 writeln("#102=0   (safe z for G53)");
 ```
-
-Above lines add variables **#100, #101, #102** to the \*.nc file. The values stored in these variables can be used later in the \*.nc file, e.g. for traversing like so:
+ 
+The values stored in these variables can be used later in the \*.nc file, e.g. for traversing like so:
 
 ```G-code
 G53 G0 Z=#102 Y=#101 X=#100
 ```
 
-In the past I added thoese lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps. For my typical setups I then just need to adapt the initial x-coordinate in the initial section.
+In the past I added thoese lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps. For my typical setups I then just needed to adapt the initial x-coordinate in the initial section.
 
-This is now completely automated based on the settings of G54, which is the workpiece (stock) offset in most of my setups. KINETIC-NC stores the coordinates of the offsets in non-volatile variables (´they are saved across sessions even when the machine is off meanwhile). The offsets for x, y, and z are stored in the variables #900, #901, #902 respectively. I normally use only the x-coordinate of the offset (#900) because this fits for 90% of my setups. So in the initial section #900 is assigned to #100 which is used in the subroutine (see below) to do the safe moevment to/from the workpiece. I could have used #900 directly in the subroutine, but this way I have more flexibility, for example in cases where I do not want to use the G54 offsets.
+In order to overcome this, it is now **completely automated based on the settings of G54**. This is the workpiece (stock) offset in most of my setups. KINETIC-NC stores the coordinates of the offsets in non-volatile variables (they are saved across sessions even when the machine is off). The offsets for x, y, and z are stored in the variables #900, #901, #902 respectively. I normally use only the x-coordinate of the offset (#900) because this fits for 90% of my setups. So in the initial section #900 is assigned to #100 which is used in the subroutine (see below) to do the safe movement to/from the workpiece. I could have used #900 directly in the subroutine, but this way I have more flexibility, for example in cases where I do not want to use the G54 offsets.
 
 When the G-code requests to change the tool the spindle needs to drive back to machine zero, the new tool (inserted manually) needs to be measured and later the spindle should go back to the workpiece.
 
@@ -137,9 +137,6 @@ KINETIC-NC allows following subroutine syntax:
 The calls for adding the subroutine G-code within the post-processor look like this:
 
 ```JavaScript
-// subroutines
-writeln("");
-writeln("");
 writeComment("Subroutine 1234");
 writeln("O1234:");
 writeln("G53 (machine coordinates)");
@@ -149,10 +146,9 @@ writeln("Y=#101");
 writeln("X=#100");
 writeln("G54 (workpiece coordinates)");
 writeln("M99 (End Subroutine 1234)");
-writeln("");
 ```
 
-Which would render in the \*.nc file as (blank lines omitted):
+Which would render in the \*.nc file as:
 
 ```G-code
 (Subroutine 1234)
