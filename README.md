@@ -30,20 +30,22 @@ Adding some commands to the post-processor is quite easy, as I needed to use onl
 
 Adding a section to [FUSION_360_KINETIC-NC_HIGH-Z_720T.cps](FUSION_360_KINETIC-NC_HIGH-Z_720T.cps) which will always be written to the **\*.nc** file when using this post-processor:
 
-    writeln("");
-    writeComment("Initial section");
-    writeln("G54 (needed here so that offsets are being read)");
-    writeln("#100=#900 (use x-offset of G54 for G53)");
-    writeln("#101=0   (safe y for G53)");
-    writeln("#102=0   (safe z for G53)");
-    writeln('PRINT "x-offset = ";#100;"mm"');
-    writeln('ASKBOOL "Continue with x-offset" I=2');
-    writeln('IF #0=0 THEN');
-    writeln('  ASKFLT "Enter x-offset" I=0.0 J=720.0');
-    writeln('  #100=#0');
-    writeln('  PRINT "x-offset = ";#100;"mm"');
-    writeln('ENDIF');
-    writeln("");
+```JavaScript
+writeln("");
+writeComment("Initial section");
+writeln("G54 (needed here so that offsets are being read)");
+writeln("#100=#900 (use x-offset of G54 for G53)");
+writeln("#101=0   (safe y for G53)");
+writeln("#102=0   (safe z for G53)");
+writeln('PRINT "x-offset = ";#100;"mm"');
+writeln('ASKBOOL "Continue with x-offset" I=2');
+writeln('IF #0=0 THEN');
+writeln('  ASKFLT "Enter x-offset" I=0.0 J=720.0');
+writeln('  #100=#0');
+writeln('  PRINT "x-offset = ";#100;"mm"');
+writeln('ENDIF');
+writeln("");
+```
 
 ## Explanation
 
@@ -80,7 +82,9 @@ This line from the original post-processor:
 
 writes the following into the \*.nc file:
 
-    N1000 T8 M6
+```G-code
+N1000 T8 M6
+```
 
 Which means command number 1000 (for example), tool number 8 (for example) and **M6** is tool change. So I know when the post-processor writes this line a tool-change will happen. Thus I surrounded it (shown below) by two lines which trigger a subroutine that performs the safe traversal to/from machine zero.
 
@@ -93,10 +97,12 @@ So I added a safe path (by calling a subroutine which moves the spindle accordin
 
 In the code this renders to:
 
-    M98 P1234 (call subroutine 1234)
-    N25 M9
-    N30 T18 M6
-    M98 P1234 (call subroutine 1234)
+```G-code
+M98 P1234 (call subroutine 1234)
+N25 M9
+N30 T18 M6
+M98 P1234 (call subroutine 1234)
+```
 
 As can be seen also the coolant off (M9) needed to be wrapped. Found this by testing.
 
@@ -133,16 +139,17 @@ The calls for adding the subroutine G-code within the post-processor look like t
 
 Which would render in the \*.nc file as (blank lines omitted):
 
-    // subroutines
-    (Subroutine 1234)
-    O1234:
-    G53 (machine coordinates)
-    G0 (go fast)
-    Z=#102 (safety height)
-    Y=#101
-    X=#100
-    G54 (workpiece coordinates)
-    M99 (End Subroutine 1234)
+```G-code
+(Subroutine 1234)
+O1234:
+G53 (machine coordinates)
+G0 (go fast)
+Z=#102 (safety height)
+Y=#101
+X=#100
+G54 (workpiece coordinates)
+M99 (End Subroutine 1234)
+```
     
 The subroutine uses the variables defined at the beginning of the \*.nc file. So I just need to update these variables once. Then for all subsequent tool changes there should be a safe path " to and from". When I use the same code but have a new workpiece clamped at another position, I again just update the G54 offsets.
 
@@ -156,22 +163,25 @@ KINETIC-NC allows skipping portions of the code by using the **SKIP** command. T
 
 Following lines show an example of how this is prepared in the G-code by the post-processor:
 
-    (Uncomment to skip until specified label)
-    (Skip label must exist, than jump label is accepted)
-    (SKIP L0001)
-    ...
-    ...
-    ....
-    (L0001:)
+```G-code
+(Uncomment to skip until specified label)
+(Skip label must exist, than jump label is accepted)
+(SKIP L0001)
+...
+...
+....
+(L0001:)
+```
 
 If needed the code can be activated by editing the code like:
 
-    SKIP L0001
-    ...
-    ...
-    ....
-    L0001:
-
+```G-code
+SKIP L0001
+...
+...
+....
+L0001:
+```
 
 The code between the SKIP command and the label is not executed.
 
