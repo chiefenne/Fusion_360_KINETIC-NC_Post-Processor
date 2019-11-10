@@ -179,7 +179,9 @@ The code between the SKIP command and the label is not executed.
 
 ## Example using REPEAT/NEXT
 
-KINETIC-NC allows loops over portions of the G-code. In order to facilitate this feature, the **REPEAT** and **NEXT** keywords are automatically inserted close to the top and at the end of each section. The following code snippet from the thread example file shows 
+KINETIC-NC allows loops over portions of the G-code. In order to facilitate this feature, the **REPEAT** and **NEXT** keywords are automatically inserted close to the top and at the end of each section.
+
+The following code snippet from the thread example file shows this:
     
     (Chamfer)
     M98 P1234 (call subroutine 1234)
@@ -189,9 +191,7 @@ KINETIC-NC allows loops over portions of the G-code. In order to facilitate this
     N1615 S5000 M3
     N1620 G54
     (Edit repeat count according to needs)
-    ```diff
-    - REPEAT=1
-    ```
+    REPEAT=1
     N1625 M9
     N1635 G0 X27.95 Y12.5
     N1640 G0 G43 Z15 H13
