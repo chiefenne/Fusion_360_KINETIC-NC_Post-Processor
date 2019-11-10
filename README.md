@@ -31,9 +31,17 @@ Adding a section to [FUSION_360_KINETIC-NC_HIGH-Z_720T.cps](FUSION_360_KINETIC-N
 
     writeln("");
     writeComment("Initial section");
-    writeln("#100=350 (x-absolute machine coordinates)");
-    writeln("#101=0   (y-absolute machine coordinates)");
-    writeln("#102=0   (z-absolute machine coordinates, safety height)");
+    writeln("G54 (needed here so that offsets are being read)");
+    writeln("#100=#900 (use x-offset of G54 for G53)");
+    writeln("#101=0   (safe y for G53)");
+    writeln("#102=0   (safe z for G53)");
+    writeln('PRINT "x-offset = ";#100;"mm"');
+    writeln('ASKBOOL "Continue with x-offset" I=2');
+    writeln('IF #0=0 THEN');
+    writeln('  ASKFLT "Enter x-offset" I=0.0 J=720.0');
+    writeln('  #100=#0');
+    writeln('  PRINT "x-offset = ";#100;"mm"');
+    writeln('ENDIF');
     writeln("");
 
 ## Explanation
@@ -49,34 +57,44 @@ Write a comment line into the \*.nc file. The result in the file will look like 
 
 And KINETIC-NC interprets this as a comment.
 
-    writeln("#100=350 (x-absolute machine coordinates)");
-    writeln("#101=0   (y-absolute machine coordinates)");
-    writeln("#102=0   (z-absolute machine coordinates, safety height)");
+    writeln("G54 (needed here so that offsets are being read)");
+    writeln("#100=#900 (use x-offset of G54 for G53)");
+    writeln("#101=0   (safe y for G53)");
+    writeln("#102=0   (safe z for G53)");
+
 
 Above lines add variables **#100, #101, #102** to the \*.nc file. The values stored in these variables can be used later in the \*.nc file, e.g. for traversing like so:
 
     G53 G0 Z=#102 Y=#101 X=#100
 
-In the past I added thoese lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps.  For my typical setups I then just need to adopt the initial x-coordinate. When I need to change tools the spindle drives back to machine zero and then comes back to the workpiece. So I added a safe path (by calling a subroutine which moves the spindle according to these variables) automatically before and after each tool change like:
+In the past I added thoese lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps. For my typical setups I then just need to adapt the initial x-coordinate in the initial section.
+
+This is now completely automated based on the settings of G54, which is the workpiece (stock) offset in most of my setups. KINETIC-NC stores the coordinates of the offsets in non-volatile variables (´they are saved across sessions even when the machine is off meanwhile). The offsets for x, y, and z are stored in the variables #900, #901, #902 respectively. I normally use only the x-coordinate of the offset (#900) because this fits for 90% of my setups. So in the initial section #900 is assigned to #100 which is used in the subroutine (see below) to do the safe moevment to/from the workpiece. I could have used #900 directly in the subroutine, but this way I have more flexibility, for example in cases where I do not want to use the G54 offsets.
+
+When the G-code requests to change the tool the spindle needs to drive back to machine zero, the new tool (inserted manually) needs to be measured and later the spindle should go back to the workpiece.
+
+This line from the original post-processor:
+
+    writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
+
+writes the following into the \*.nc file:
+
+    N1000 T8 M6
+
+Which means command number 1000 (for example), tool number 8 (for example) and **M6** is tool change. So I know when the post-processor writes this line a tool-change will happen. Thus I surrounded it (shown below) by two lines which trigger a subroutine that performs the safe traversal to/from machine zero.
+
+So I added a safe path (by calling a subroutine which moves the spindle according to these variables) automatically before and after each tool change like:
 
     // go to safe position before doing tool change
     writeln('M98 P1234 (call subroutine 1234)');
     writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
     writeln('M98 P1234 (call subroutine 1234)');
 
-The line:
+**NOTE:** A tool change requires the tool to be measured again. For this I added the G79 command to the [M66](M66.txt) macro, which resides in the following folder on the PC:
 
-    writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
+    C:\ProgramData\KinetiC-NC\macros
 
-writes following into the \*.nc file:
-
-    N1000 T8 M6
-
-Which means command number 1000 (for example), tool number 8 (for example) and **M6** is tool change. So I know when the post-processor writes this line a tool-change will happen. Thus I surround it (as shown above) by two lines which trigger a subroutine that performs the safe traversal.
-
-<div>
-  <strong>NOTE: </strong>A tool change requires the tool to be measured again. For this I added the G79 command to the M66.txt macro.
-</div><br>
+In KINETIC-NC the M66 macro is called when in the G-code there is an M6 command (tool change), but the machine has no automatic tool change capability.
 
 KINETIC-NC allows following subroutine syntax:
 
@@ -114,9 +132,7 @@ Which would render in the \*.nc file as (blank lines omitted):
     G54 (workpiece coordinates)
     M99 (End Subroutine 1234)
     
-The subroutine uses the variables defined at the beginning of the \*.nc file. So I just need to update these variables once. Then for all subsequent tool changes there should be a safe path " to and from". When I use the same code but have a new workpiece clamped at another position, I agoin just update mainly the variable for the x-coordinate (#100).
-
-To make it even more convenient, the **#10x** variable could be set according to the values stored in the workpiece origin (for example after having defined the offsets for G54).
+The subroutine uses the variables defined at the beginning of the \*.nc file. So I just need to update these variables once. Then for all subsequent tool changes there should be a safe path " to and from". When I use the same code but have a new workpiece clamped at another position, I again just update the G54 offsets.
 
 In the same way more functionality can be added to the post-processor or different *dialects* of the same post-processor could be created depending on the requirements.
 
