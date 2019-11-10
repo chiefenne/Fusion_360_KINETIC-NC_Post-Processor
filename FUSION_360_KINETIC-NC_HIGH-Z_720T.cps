@@ -415,8 +415,9 @@ function onSection() {
     forceWorkPlane();
     
     retracted = true;
-    // chiefenne: go to safe position before tool change
+    // chiefenne:
     // has to be before M9 in KINETIC-NC
+    writeComment('Go to safe position before tool change');
     writeln('M98 P1234 (call subroutine 1234)');
     onCommand(COMMAND_COOLANT_OFF);
   
@@ -429,7 +430,8 @@ function onSection() {
     }
 
     writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
-    // chiefenne: go to safe position after tool change
+    // chiefenne:
+    writeComment('Go to safe position after tool change');
     writeln('M98 P1234 (call subroutine 1234)');
     if (tool.comment) {
       writeComment(tool.comment);
