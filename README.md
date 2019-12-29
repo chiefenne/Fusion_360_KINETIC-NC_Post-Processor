@@ -176,12 +176,14 @@ KINETIC-NC allows skipping portions of the code by using the **SKIP** command. T
 
 **NOTE:** A label cannot exist on its own unless it has been defined in by the SKIP command before.
 
+**NOTE:** Labels need to use other characters than those used in G-code
+
 Following lines show an example of how this is prepared in the G-code by the post-processor:
 
 ```G-code
 (Uncomment to skip until specified label)
 (Skip label must exist, than jump label is accepted)
-(SKIP L0001)
+(SKIP Q0001)
 ...
 ...
 ....
@@ -191,11 +193,11 @@ Following lines show an example of how this is prepared in the G-code by the pos
 If needed the code can be activated by editing the code like:
 
 ```G-code
-SKIP L0001
+SKIP Q0001
 ...
 ...
 ....
-L0001:
+Q0001:
 ```
 
 The code between the SKIP command and the label is not executed.
