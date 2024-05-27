@@ -11,7 +11,7 @@
 */
 
 description = "KINETIC-NC post with automatic work offset";
-longDescription = "Generic post adapted for the KINETIC-NC software. Includes automatic work offset for save toll changes.";
+longDescription = "Generic post adapted for the KINETIC-NC software. Includes semi-automatic positioning for save tool changes.";
 vendor = "chiefenne";
 vendorUrl = "https://github.com/chiefenne/Fusion_360_KINETIC-NC_Post-Processor";
 legal = "Copyright (C) 2012-2016 by Autodesk, Inc.";
