@@ -50,8 +50,6 @@ properties = {
 
 var numberOfToolSlots = 9999;
 
-
-
 var mapCoolantTable = new Table(
   [9, 8, 7],
   {initial:COOLANT_OFF, force:true},
@@ -213,8 +211,8 @@ function onOpen() {
   }
 
 /** From the KINETIC-NC reference manual section 20.11
-#900 bis #908 (die X-Achse in #900, Y in #901 usw.). Die Nummer des aktuellen Nullpunks
- steht in #909 (0 = G53, 1 = G54 usw.). Die Variablen können geändert und danach durch L53
+  #900 bis #908 (die X-Achse in #900, Y in #901 usw.). Die Nummer des aktuellen Nullpunks
+  steht in #909 (0 = G53, 1 = G54 usw.). Die Variablen können geändert und danach durch L53
   in den Speicher des aktuell gewählten Nullpunkts (G54 bis G59) gespeichert werden. 
   G53 kann nicht verändert werden
 */
@@ -485,12 +483,12 @@ function onSection() {
       warning(localize("Spindle speed exceeds maximum value."));
     }
 
-    //    WRITE M before S
-    //  This original block would write:
-    //  S12000 M3        KINETIC-NC sometimes has trouble with this. In the block below this writing is switched
-    //  writeBlock(
-    //    sOutput.format(tool.spindleRPM), mFormat.format(tool.clockwise ? 3 : 4)
-    //  );
+    // chiefenne
+    // WRITE M before S
+    // The original block would write:
+    // S12000 M3
+    // KINETIC-NC sometimes has trouble with this.
+    // In the block below this writing is switched
 
     writeBlock(
       mFormat.format(tool.clockwise ? 3 : 4), sOutput.format(tool.spindleRPM)
