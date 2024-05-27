@@ -10,20 +10,19 @@
   FORKID {2EECF092-D7C3-4ACA-BFE6-377B72950FE9}
 */
 
-description = "KINETIC-NC including special initial section for setting x-offset";
-longDescription = "Generic post adapted for the KINETIC-NC software.";
+description = "KINETIC-NC post with automatic work offset";
+longDescription = "Generic post adapted for the KINETIC-NC software. Includes automatic work offset for save toll changes.";
 vendor = "chiefenne";
 vendorUrl = "https://github.com/chiefenne/Fusion_360_KINETIC-NC_Post-Processor";
 legal = "Copyright (C) 2012-2016 by Autodesk, Inc.";
 certificationLevel = 2;
 minimumRevision = 24000;
 
-
 extension = "nc";
-// setCodePage("utf-8");
-setCodePage("ascii");
+// setCodePage("ascii");
+setCodePage("utf-8");
 
-capabilities = CAPABILITY_MILLING;
+capabilities = CAPABILITY_MILLING | CAPABILITY_MACHINE_SIMULATION;
 tolerance = spatial(0.002, MM);
 
 minimumChordLength = spatial(0.01, MM);
@@ -33,7 +32,6 @@ minimumCircularSweep = toRad(0.01);
 maximumCircularSweep = toRad(180);
 allowHelicalMoves = true;
 allowedCircularPlanes = undefined; // allow any circular motion
-
 
 
 // user-defined properties
