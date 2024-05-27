@@ -3,24 +3,27 @@
 
 A modified Autodesk Fusion 360 post-processor for the [HIGH-Z S-720/T](https://www.cnc-step.de/cnc-fraese-high-z-s-720t-kugelgewindetrieb-720x420mm) milling machine running the [KINETIC-NC](https://www.cnc-step.de/cnc-software/kinetic-nc-netzwerk-steuerungssoftware/) software, which both are from [CNC-Step](https://www.cnc-step.de). Autodesk Fusion post-processors are written in JavaScript and the documentation of the existing classes, functions, etc. is described in the [Autodesk CAM Post Processor Documentation](https://cam.autodesk.com/posts/reference/index.html).
 
-The post processor is based on the classical format [RS-274D](https://en.wikipedia.org/wiki/G-code) also called [G-code](https://en.wikipedia.org/wiki/G-code). The original version of this RS-274D implementation for the FUSION 360 post-processor comes from [Benezan Electronics](http://www.benezan-electronics.de/index.html "Click to open Benezan Electronics"). You can download their post-processor [here](http://www.benezan-electronics.de/downloads/Autodesk_HSM_beamicon2.zip). For convenience I saved a [copy](Autodesk_HSM_beamicon2.cps "Click to open Autodesk_HSM_beamicon2.cps") in this repository.
+The post processor is based on the classical format [RS-274D](https://en.wikipedia.org/wiki/G-code) better known as  [G-code](https://en.wikipedia.org/wiki/G-code). The original version of this RS-274D implementation for the FUSION 360 post-processor comes from [Benezan Electronics](http://www.benezan-electronics.de/index.html "Click to open Benezan Electronics"). You can download their post-processor [here](http://www.benezan-electronics.de/downloads/Autodesk_HSM_beamicon2.zip). For convenience I saved a [copy](Autodesk_HSM_beamicon2.cps "Click to open Autodesk_HSM_beamicon2.cps") in this repository.
 
-The reason why the Benzean post-processor works for the KINETIC-NC software is that the KINETIC-NC software is based on the BEAMICON2 software of Benezan.
+The reason why the Benezan post-processor works for the KINETIC-NC software is that the KINETIC-NC software is based on the BEAMICON2 software of Benezan.
 
-Thus I took above postprocessor and ran it successfully on FUSION 360 for my HIGH-Z S-720/T machine which is conrolled via the KINETIC-NC software. 
+Thus, above postprocessor ran successfully in FUSION 360 and produced proper G-code for the KINETIC-NC software. This in turn controls the HIGH-Z S-720/T machine. 
 
-I did some modifications to the post-processor in order to make it more convenient for my typical operations. Be aware that the modifications mainly fit to the KINETIC-NC software. This software allows on top of the standard G-code a set of macro commands which are not part of the RS-274D standard.
+I made some modifications to the post-processor in order to make it more convenient for my typical operations. Be aware that the modifications are tested only the KINETIC-NC software. KINETIC-NC supports an additional set of specific commands which are not part of the RS-274D standard. There is also a macro language featurem, which can be used to automate recurring tasks.
 
-Adding some commands to the post-processor is quite easy, as I needed to use only two already existing functions. The main function needed is [**writeln()**](https://cam.autodesk.com/posts/reference/classPostProcessor.html#aeb90bf455982d43746741f6dce58279c) which comes with the Autodesk JavaScript API and the second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is the comment format understood by KINETIC-NC).
+Adding some commands to the post-processor is quite easy (after the obligatory learning curve). Only two - already existing - functions are employed. The main function needed is [**writeln()**](https://cam.autodesk.com/posts/reference/classPostProcessor.html#aeb90bf455982d43746741f6dce58279c) which comes with the Autodesk JavaScript API. The second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is the comment format understood by KINETIC-NC).
 
 ## Features
 
  * Initial section
-   - Safe tool position before and after tool change
-   - Safe tool position at program end
-   - Implemented via subroutine 
- * Jump labels between sections
-   - Allows to execute individual sections only
+   - Auto-read x-position of actual G54
+   - Request user to confirm or enter alternative offset
+ * Safe tool position
+   - Before and after tool change
+   - At program end
+   - Implemented via subroutine calls
+ * Jump labels between sections (e.g., 2D adaptive clearing, pockets, etc.)
+   - Allows to execute individual sections separately
  * Repeat / Next within each section
    - Allows easily to redo sections multiple times
  * Remove entries not understood by KINETIC-NC
@@ -79,11 +82,13 @@ The values stored in these variables can be used later in the \*.nc file, e.g. f
 G53 G0 Z=#102 Y=#101 X=#100
 ```
 
-In the past I added thoese lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps. For my typical setups I then just needed to adapt the initial x-coordinate in the initial section.
+In the past I added those lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps. For my typical setups I then just needed to adapt the initial x-coordinate in the initial section.
 
-In order to overcome this, it is now **completely automated based on the settings of G54**. This is the workpiece (stock) offset in most of my setups. KINETIC-NC stores the coordinates of the offsets in non-volatile variables (they are saved across sessions even when the machine is off). The offsets for x, y, and z are stored in the variables #900, #901, #902 respectively. I normally use only the x-coordinate of the offset (#900) because this fits for 90% of my setups. So in the initial section #900 is assigned to #100 which is used in the subroutine (see below) to do the safe movement to/from the workpiece. I could have used #900 directly in the subroutine, but this way I have more flexibility, for example in cases where I do not want to use the G54 offsets.
+In order to overcome this, it is now **completely automated based on the settings of G54**. This is the workpiece (stock) offset in most of my setups. KINETIC-NC stores the coordinates of the offsets in non-volatile variables (they are saved across sessions even when the machine is off). The offsets for x, y, and z are stored in the variables #900, #901, #902 respectively.
 
-When the G-code requests to change the tool the spindle needs to drive back to machine zero, the new tool (inserted manually) needs to be measured and later the spindle should go back to the workpiece.
+I normally use only the x-coordinate of the offset (#900) because this fits for 90% of my setups. So in the initial section #900 is assigned to #100 which is used in the subroutine (see below) to do the safe movement to/from the workpiece. I could have used #900 directly in the subroutine, but this way I have more flexibility, for example in cases where I do not want to use the G54 offsets.
+
+When the G-code requests to change the tool, the spindle needs to drive back to machine zero, the new tool (inserted manually) needs to be measured and later the spindle should go back to the workpiece.
 
 This line from the original post-processor:
 
@@ -99,7 +104,7 @@ N1000 T8 M6
 
 Which means command number 1000 (for example), tool number 8 (for example) and **M6** is tool change. So I know when the post-processor writes this line a tool-change will happen. Thus I surrounded it (shown below) by two lines which trigger a subroutine that performs the safe traversal to/from machine zero.
 
-So I added a safe path (by calling a subroutine which moves the spindle according to these variables) automatically before and after each tool change like:
+So I added a safe path (by calling a subroutine) which moves the spindle automatically according to these variables before and after each tool change:
 
 ```JavaScript
 writeComment('Go to safe position before tool change');
@@ -165,14 +170,19 @@ X=#100
 G54 (workpiece coordinates)
 M99 (End Subroutine 1234)
 ```
-    
-The subroutine uses the variables defined at the beginning of the \*.nc file. So I just need to update these variables once. Then for all subsequent tool changes there should be a safe path " to and from". When I use the same code but have a new workpiece clamped at another position, I again just update the G54 offsets.
 
-In the same way more functionality can be added to the post-processor or different *dialects* of the same post-processor could be created depending on the requirements.
+The subroutine uses the variables defined at the beginning of the \*.nc file. So I just need to update these variables once. Then for all subsequent tool changes there should be a safe path "to and from". When I use the same code but have a new workpiece clamped at another position, I again just update the G54 offset(s).
+
+The subroutine call can also point to an external file (not used in this post processor):
+```
+CALL "SUBD9@plug.txt"
+```
+
+In the same way, more functionality can be added to the post-processor or different *dialects* of the same post-processor could be created depending on the requirements.
 
 ## Example for using the jump labels
 
-KINETIC-NC allows skipping portions of the code by using the **SKIP** command. This comes handy when in a longer NC program a certain section should be done later again, but some other operations not. In order to support this upfront, the respective code is added by the post-processor as comments, so that it just has to be uncommented when being used.
+KINETIC-NC allows skipping portions of the code by using the **SKIP** command. This comes in handy when in a longer NC program a certain section should be done later again, but some other operations not. In order to support this upfront, the respective code is added by the post-processor as comments, so that it just has to be uncommented when being used.
 
 **NOTE:** A label cannot exist on its own unless it has been defined in by the SKIP command before.
 
@@ -187,7 +197,7 @@ Following lines show an example of how this is prepared in the G-code by the pos
 ...
 ...
 ....
-(L0001:)
+(Q0001:)
 ```
 
 If needed the code can be activated by editing the code like:
@@ -200,7 +210,7 @@ SKIP Q0001
 Q0001:
 ```
 
-The code between the SKIP command and the label is not executed.
+The code between the SKIP command and the label is not executed. The SKIP command is typically used with **IF..THEN** constructs.
 
 **NOTE:** The colon is needed only at the label itself. In the line where the SKIP command is, it is not allowed.
 
