@@ -1,6 +1,9 @@
 
 # Fusion 360 KINETIC-NC Post-Processor
 
+> [!NOTE]  
+> CNC-Step have also their own post-processor. It did not exist at the time when this post was coded. It can be found in the post library for Autodesk Fusion (https://cam.autodesk.com/hsmposts). You need to search for "kinetic" since the post is not shown when scrolling down (there are too many listed). After seraching for "kinetic" the most recent version of the official CNC-Step post can be downloaded.
+
 A modified Autodesk Fusion 360 post-processor for the [HIGH-Z S-720/T](https://www.cnc-step.de/cnc-fraese-high-z-s-720t-kugelgewindetrieb-720x420mm) milling machine running the [KINETIC-NC](https://www.cnc-step.de/cnc-software/kinetic-nc-netzwerk-steuerungssoftware/) software, which both are from [CNC-Step](https://www.cnc-step.de). Autodesk Fusion post-processors are written in JavaScript and the documentation of the existing classes, functions, etc. is described in the [Autodesk CAM Post Processor Documentation](https://cam.autodesk.com/posts/reference/index.html).
 
 The post processor is based on the classical format [RS-274D](https://en.wikipedia.org/wiki/G-code) better known as  [G-code](https://en.wikipedia.org/wiki/G-code). The original version of this RS-274D implementation for the FUSION 360 post-processor comes from [Benezan Electronics](http://www.benezan-electronics.de/index.html "Click to open Benezan Electronics"). You can download their post-processor [here](http://www.benezan-electronics.de/downloads/Autodesk_HSM_beamicon2.zip). For convenience I saved a [copy](Autodesk_HSM_beamicon2.cps "Click to open Autodesk_HSM_beamicon2.cps") in this repository.
@@ -128,7 +131,8 @@ M98 P1234 (call subroutine 1234)
 
 As can be seen also the coolant off (M9) needed to be wrapped. Found this by testing.
 
-**NOTE:** A tool change requires the tool to be measured again. For this I added the G79 command to the [M66](M66.txt) macro, which resides in the following folder on the PC:
+> [!NOTE]  
+>  A tool change requires the tool to be measured again. For this I added the G79 command to the [M66](M66.txt) macro, which resides in the following folder on the PC:
 
     C:\ProgramData\KinetiC-NC\macros
 
@@ -184,9 +188,11 @@ In the same way, more functionality can be added to the post-processor or differ
 
 KINETIC-NC allows skipping portions of the code by using the **SKIP** command. This comes in handy when in a longer NC program a certain section should be done later again, but some other operations not. In order to support this upfront, the respective code is added by the post-processor as comments, so that it just has to be uncommented when being used.
 
-**NOTE:** A label cannot exist on its own unless it has been defined in by the SKIP command before.
+> [!NOTE]  
+> A label cannot exist on its own unless it has been defined in by the SKIP command before.
 
-**NOTE:** Labels need to use other characters than those used in G-code
+> [!NOTE]  
+>  Labels need to use other characters than those used in G-code
 
 Following lines show an example of how this is prepared in the G-code by the post-processor:
 
@@ -212,7 +218,8 @@ Q0001:
 
 The code between the SKIP command and the label is not executed. The SKIP command is typically used with **IF..THEN** constructs.
 
-**NOTE:** The colon is needed only at the label itself. In the line where the SKIP command is, it is not allowed.
+> [!NOTE]  
+> The colon is needed only at the label itself. In the line where the SKIP command is, it is not allowed.
 
 ## Example using REPEAT/NEXT
 
@@ -254,6 +261,5 @@ NEXT
 
 Just change the number after the **REPEAT** keyword from **1** to a bigger number and the section should be executed the respective number of times.
 
-## Pro tip
-
-In order to debug the post-processor code in FUSION 360, tick the "Open Nc-file in editor" option in the post-processor before saving. When the code change fails, the corresponding error message(s) are shown in the editor. Another indication that something went wrong, is an empty properties window at the lower right of the post-processor dialog.
+> [!TIP]  
+> In order to debug the post-processor code in FUSION 360, tick the "Open Nc-file in editor" option in the post-processor before saving. When the code change fails, the corresponding error message(s) are shown in the editor. Another indication that something went wrong, is an empty properties window at the lower right of the post-processor dialog.
