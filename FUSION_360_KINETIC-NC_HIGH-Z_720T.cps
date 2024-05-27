@@ -19,8 +19,8 @@ certificationLevel = 2;
 minimumRevision = 24000;
 
 extension = "nc";
-// setCodePage("ascii");
-setCodePage("utf-8");
+// setCodePage("utf-8");
+setCodePage("ascii");
 
 capabilities = CAPABILITY_MILLING | CAPABILITY_MACHINE_SIMULATION;
 tolerance = spatial(0.002, MM);
