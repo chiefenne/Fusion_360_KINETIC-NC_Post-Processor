@@ -10,16 +10,17 @@
   FORKID {2EECF092-D7C3-4ACA-BFE6-377B72950FE9}
 */
 
-description = "RS-274D";
-vendor = "Autodesk";
-vendorUrl = "http://www.autodesk.com";
+description = "KINETIC-NC including special initial section for setting x-offset";
+longDescription = "Generic post adapted for the KINETIC-NC software.";
+vendor = "chiefenne";
+vendorUrl = "https://github.com/chiefenne/Fusion_360_KINETIC-NC_Post-Processor";
 legal = "Copyright (C) 2012-2016 by Autodesk, Inc.";
 certificationLevel = 2;
 minimumRevision = 24000;
 
-longDescription = "Generic post for the RS-274D format. Adapted for the KINETIC-NC software.";
 
 extension = "nc";
+// setCodePage("utf-8");
 setCodePage("ascii");
 
 capabilities = CAPABILITY_MILLING;
@@ -417,22 +418,25 @@ function onSection() {
     retracted = true;
     // chiefenne:
     // has to be before M9 in KINETIC-NC
+    writeln('');
     writeComment('Go to safe position before tool change');
     writeln('M98 P1234 (call subroutine 1234)');
     onCommand(COMMAND_COOLANT_OFF);
-  
+    
     if (!isFirstSection() && properties.optionalStop) {
-      onCommand(COMMAND_OPTIONAL_STOP);
+        onCommand(COMMAND_OPTIONAL_STOP);
     }
-
+    
     if (tool.number > numberOfToolSlots) {
-      warning(localize("Tool number exceeds maximum value."));
+        warning(localize("Tool number exceeds maximum value."));
     }
-
+    
     writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
     // chiefenne:
     writeComment('Go to safe position after tool change');
     writeln('M98 P1234 (call subroutine 1234)');
+    writeln('');
+
     if (tool.comment) {
       writeComment(tool.comment);
     }
@@ -480,8 +484,16 @@ function onSection() {
     if (tool.spindleRPM > 99999) {
       warning(localize("Spindle speed exceeds maximum value."));
     }
+
+    //    WRITE M before S
+    //  This original block would write:
+    //  S12000 M3        KINETIC-NC sometimes has trouble with this. In the block below this writing is switched
+    //  writeBlock(
+    //    sOutput.format(tool.spindleRPM), mFormat.format(tool.clockwise ? 3 : 4)
+    //  );
+
     writeBlock(
-      sOutput.format(tool.spindleRPM), mFormat.format(tool.clockwise ? 3 : 4)
+      mFormat.format(tool.clockwise ? 3 : 4), sOutput.format(tool.spindleRPM)
     );
   }
 
