@@ -395,7 +395,7 @@ function onSection() {
   var skipLabelStr = ('Q000' + skipLabel).slice(-4)
   skipLabelStr = "SKIP ".concat(skipLabelStr);
   writeln("(Uncomment to skip until specified label)");
-  writeln("(Skip label must exist, than jump label is accepted)");
+  writeln("(Skip label must exist, then jump label is accepted)");
   writeln("(SKIP Q0000)");
   writeln("");
   writeln(jumpLabelStr);
