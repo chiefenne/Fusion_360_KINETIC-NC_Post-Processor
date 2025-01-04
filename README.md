@@ -157,13 +157,6 @@ KINETIC-NC allows loops over portions of the G-code. In order to facilitate this
 The following code snippet from the thread example file shows this:
     
 ```G-code
-(Chamfer)
-M98 P1234 (call subroutine 1234)
-N1605 M9
-N1610 T13 M6
-M98 P1234 (call subroutine 1234)
-N1615 S5000 M3
-N1620 G54
 (Edit repeat count according to needs)
 REPEAT=1
 N1625 M9
