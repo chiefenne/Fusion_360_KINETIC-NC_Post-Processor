@@ -91,7 +91,11 @@ writeln("#102=0   (safe z for going to workpiece)");
 The values stored in these variables can be used later in the \*.nc file, e.g. for traversing like so:
 
 ```G-code
-G53 G0 Z=#102 Y=#101 X=#100
+(Go to safe start position)
+G53
+G0 Z=#102
+G0 Y=#101
+G0 X=#100
 ```
 
 In the past I added those lines always manually at the beginning of the \*.nc file in order to move safely to the workpiece without crashing into any clamps. For my typical setups I then just needed to adapt the initial x-coordinate in the initial section.
