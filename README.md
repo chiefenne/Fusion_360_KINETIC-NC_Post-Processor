@@ -5,7 +5,7 @@
 
 A modified Autodesk Fusion 360 post-processor for the [HIGH-Z S-720/T](https://www.cnc-step.de/cnc-fraese-high-z-s-720t-kugelgewindetrieb-720x420mm) milling machine running the [KINETIC-NC](https://www.cnc-step.de/cnc-software/kinetic-nc-netzwerk-steuerungssoftware/) software, which both are from CNC-Step (https://www.cnc-step.de).
 
-Autodesk Fusion post-processors are written in JavaScript and the documentation of the existing classes, functions, etc. is described in the [Autodesk CAM Post Processor Documentation](https://cam.autodesk.com/posts/reference/index.html).
+Autodesk Fusion post-processors are written in JavaScript and the documentation of the existing classes, functions, etc., is described in the [Autodesk CAM Post Processor Documentation](https://cam.autodesk.com/posts/reference/index.html).
 
 I made some modifications to the post-processor provided by CNC-Step, in order to make it more convenient for my typical operations. Be aware, that the modifications are tested only the KINETIC-NC software and on my personal machine. KINETIC-NC supports an additional set of specific commands which are not part of the RS-274D standard. KINETIC-NC supports also a macro language, which can be used to automate recurring tasks.
 
