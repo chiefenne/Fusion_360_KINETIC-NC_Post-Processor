@@ -164,7 +164,6 @@ var fifthAxisClamp = createOutputVariable({}, mFormat);
 
 // >>> chiefenne
 var jumpLabel = 0;
-var firstSection = true;
 // <<< chiefenne
 
 var settings = {
@@ -329,12 +328,12 @@ function onSection() {
       // >>> chiefenne
       // always make a manual tool change (even if not selected for the tool in the FUSION tool library)
       // writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(tool.getManualToolChange() ? 66 : 6));
+      if (!isFirstSection()) {
+        safeStartPositionChiefenne();
+      }
       writeComment(tool.comment + "T" + toolFormat.format(tool.number));
       writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(66));
-      if (firstSection) {
-          firstSection = false;
-          safeStartPositionChiefenne();
-      }
+      safeStartPositionChiefenne();
       // <<< chiefenne
     } else {
       writeToolCall(tool, insertToolCall);
@@ -595,7 +594,7 @@ function onCommand(command) {
     return;
   case COMMAND_LOAD_TOOL:
     // >>> chiefenne
-    // always make a manual tool change (even if not selected for the tool in the FUSION tool library)
+    // always make a manual tool change (even if not selected from the tool in the FUSION tool library)
     // writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
     writeComment(tool.comment);
     writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(66));
@@ -1008,7 +1007,7 @@ function writeToolBlock() {
   var show = getProperty("showSequenceNumbers");
   setProperty("showSequenceNumbers", (show == "true" || show == "toolChange") ? "true" : "false");
   // >>> chiefenne
-  if (!firstSection) {
+  if (!isFirstSection) {
       safeStartPositionChiefenne();
   writeComment("MANUAL TOOL CHANGE TO T" + toolFormat.format(tool.number));
   }
