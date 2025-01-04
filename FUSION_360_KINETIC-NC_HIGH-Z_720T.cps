@@ -291,16 +291,46 @@ function onSection() {
   }
 
   writeln("");
+
+  // >>> chiefenne
+  // write jump label between each section
+  // this can later be used to run sections individually
+  jumpLabel++;
+  skipLabel = jumpLabel + 1;
+
+  let jumpLabelStr = "(" + "Q" + String(jumpLabel).padStart(4, "0") + ":)";
+  let skipLabelStr = "(SKIP " + "Q" + String(skipLabel).padStart(4, "0") + ")";
+
+  writeComment("Modify SKIP label to jump to the respective section");
+  writeComment("To activate, remove the brackets around SKIP and JUMP labels");
+  writeComment("Skip label is without ':' and JUMP label is with ':'");
+  writeComment(skipLabelStr);
+  writeComment(jumpLabelStr);
+  writeln("");
+  // <<< chiefenne
+
   writeComment(getParameter("operation-comment", ""));
 
   // tool change
   if (insertToolCall) {
     forceModals();
+    // >>> chiefenne
+    // to force manual tool change (i.e., M66)
+    tool.manualToolChange = true;
+    // <<< chiefenne
     if (tool.manualToolChange) {
       forceWorkPlane();
       onCommand(COMMAND_COOLANT_OFF);
-      writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(tool.getManualToolChange() ? 66 : 6));
+      // >>> chiefenne
+      // always make a manual tool change (even if not selected for the tool in the FUSION tool library)
+      // writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(tool.getManualToolChange() ? 66 : 6));
       writeComment(tool.comment);
+      writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(66));
+      if (firstSection) {
+          firstSection = false;
+          safeStartPositionChiefenne();
+      }
+      // <<< chiefenne
     } else {
       writeToolCall(tool, insertToolCall);
     }
@@ -328,6 +358,12 @@ function onSection() {
   var initialPosition = getFramePosition(currentSection.getInitialPosition());
   var isRequired = insertToolCall || state.retractedZ || (!isFirstSection() && getPreviousSection().isMultiAxis());
   writeInitialPositioning(initialPosition, isRequired);
+
+  // >>> chiefenne: prepare repeat of section
+  writeComment('(Edit repeat count according to needs)');
+  writeln('REPEAT=1');
+  // <<< chiefenne
+
 }
 
 function onDwell(seconds) {
@@ -546,11 +582,19 @@ function onCommand(command) {
     return;
   case COMMAND_START_SPINDLE:
     forceSpindleSpeed = false;
-    writeBlock(sOutput.format(spindleSpeed), mFormat.format(tool.clockwise ? 3 : 4));
+    // >>> chiefenne
+    // writeBlock(sOutput.format(spindleSpeed), mFormat.format(tool.clockwise ? 3 : 4));
+    writeBlock(mFormat.format(tool.clockwise ? 3 : 4), sOutput.format(spindleSpeed));
+    // <<< chiefenne
+
     return;
   case COMMAND_LOAD_TOOL:
-    writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
+    // >>> chiefenne
+    // always make a manual tool change (even if not selected for the tool in the FUSION tool library)
+    // writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
     writeComment(tool.comment);
+    writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(66));
+    // <<< chiefenne
 
     var preloadTool = getNextTool(tool.number != getFirstTool().number);
     if (getProperty("preloadTool") && preloadTool) {
@@ -599,18 +643,29 @@ function onSectionEnd() {
     }
   }
   forceAny();
+
+  // >>> chiefenne
+  writeComment("Below NEXT jumps back to most recent REPEAT label");
+  writeln("NEXT");
+  // <<< chiefenne
+
 }
 
 function onClose() {
   optionalSection = false;
   onCommand(COMMAND_STOP_SPINDLE);
   onCommand(COMMAND_COOLANT_OFF);
-  writeRetract(Z); // retract
-  forceWorkPlane();
-  setWorkPlane(new Vector(0, 0, 0)); // reset working plane
-  if (getSetting("retract.homeXY.onProgramEnd", false)) {
-    writeRetract(settings.retract.homeXY.onProgramEnd);
-  }
+    // >>> chiefenne
+    // writeRetract(Z); // retract
+    // forceWorkPlane();
+    // setWorkPlane(new Vector(0, 0, 0)); // reset working plane
+    // if (getSetting("retract.homeXY.onProgramEnd", false)) {
+    //   writeRetract(settings.retract.homeXY.onProgramEnd);
+    // }
+    safeStartPositionChiefenne();
+    writeln("G28"); // home all axes from safe position
+    // <<< chiefenne
+
   writeBlock(mFormat.format(30)); // program end
   writeln("%");
 }
@@ -947,6 +1002,13 @@ function onComment(text) {
 function writeToolBlock() {
   var show = getProperty("showSequenceNumbers");
   setProperty("showSequenceNumbers", (show == "true" || show == "toolChange") ? "true" : "false");
+  // >>> chiefenne
+  writeComment("MANUAL TOOL CHANGE TO T" + toolFormat.format(tool.number));
+  if (!firstSection) {
+      safeStartPositionChiefenne();
+  }
+  // <<< chiefenne
+
   writeBlock(arguments);
   setProperty("showSequenceNumbers", show);
   machineSimulation({/*x:toPreciseUnit(200, MM), y:toPreciseUnit(200, MM), coordinates:MACHINE,*/ mode:TOOLCHANGE}); // move machineSimulation to a tool change position
@@ -1639,6 +1701,9 @@ function writeProgramHeader() {
   var model = machineConfiguration.getModel();
   var mDescription = machineConfiguration.getDescription();
   if (getProperty("writeMachine") && (vendor || model || mDescription)) {
+    // >>> chiefenne
+    // localize did not work for some reason; hardcoded english
+    /*
     writeComment(localize("Machine"));
     if (vendor) {
       writeComment("  " + localize("vendor") + ": " + vendor);
@@ -1649,6 +1714,18 @@ function writeProgramHeader() {
     if (mDescription) {
       writeComment("  " + localize("description") + ": "  + mDescription);
     }
+    */
+      writeComment("Machine:");
+      if (vendor) {
+          writeComment("  " + "vendor: " + vendor);
+      }
+      if (model) {
+          writeComment("  " + "model: " + model);
+      }
+      if (mDescription) {
+          writeComment("  " + "description: " + mDescription);
+      }
+      // <<< chiefenne
   }
 
   // dump tool information
@@ -1672,6 +1749,12 @@ function writeProgramHeader() {
       }
       var tools = getToolTable();
       if (tools.getNumberOfTools() > 0) {
+
+        // >>> chiefenne
+        writeln("");
+        writeComment("Tools used in this program:");
+        // <<< chiefenne
+
         for (var i = 0; i < tools.getNumberOfTools(); ++i) {
           var tool = tools.getTool(i);
           var comment = (getProperty("toolAsName") ? "\"" + tool.description.toUpperCase() + "\"" : "T" + toolFormat.format(tool.number)) + " " +
@@ -1686,6 +1769,26 @@ function writeProgramHeader() {
           comment += " - " + getToolTypeName(tool.type);
           writeComment(comment);
         }
+
+        // >>> chiefenne
+        writeln("");
+        writeComment("Safe path to workpiece origin - derived automatically from G54 origin");
+        writeln("G54");
+        writeln("#100=#900 (read x-offset which was set in G54)");
+        writeln("#101=0   (safe y for going to workpiece)");
+        writeln("#102=0   (safe z for going to workpiece)");
+        writeln('PRINT "x-offset = ";#100;"mm"');
+        writeln('PRINT "y-offset = ";#101;"mm"');
+        writeln('PRINT "z-offset = ";#102;"mm"');
+        writeln('ASKBOOL "Continue with offsets?" I=2');
+        writeln('IF #0=0 THEN');
+        writeln('  ASKFLT "Enter x-offset" I=0.0 J=720.0');
+        writeln('  #100=#0');
+        writeln('  PRINT "x-offset = ";#100;"mm"');
+        writeln('ENDIF');
+        writeln("");
+        // <<< chiefenne
+
       }
     }
   }
@@ -2041,3 +2144,33 @@ function getOffsetCode() {
 }
 // <<<<< INCLUDED FROM include_files/getOffsetCode_fanuc.cpi
 // <<<<< INCLUDED FROM ../common/beamicon2 mill.cps
+
+// >>> chiefenne
+function safeStartPositionChiefenne() {
+    // Run tool to safe position (see chiefenne mods function writeProgramHeader)
+    //
+    //   machine x,y extent
+    //   -----------------------------
+    //   |                           |    
+    //   |                           |    
+    //   |        ----------         |    
+    //   |        | stock  |         |    
+    //   |        |        |         |    
+    //   |        o---------         |    
+    //   |                           |    
+    //   |                           |    
+    //   0 -------xy------------------    
+    //
+    //   0  ... machine zero (G53)
+    //   o  ... stock zero (G54)
+    //   xy ... safe position to move to stock origin (G54)
+    //
+    //
+    writeComment("Go to safe start position");
+    writeln("G53");
+    writeln("G0 Z=#102"); // lift spindle (will b typically at Z=0 in machine coordinates G53)
+    writeln("G0 Y=#101"); // move to safe position in Y (will be typically at Y=0 in machine coordinates G53)
+    writeln("G0 X=#100"); // move to safe position in X (will be typically at X of stock zero in machine coordinates G53)
+
+}
+// <<< chiefenne
