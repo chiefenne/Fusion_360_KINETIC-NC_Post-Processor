@@ -128,23 +128,21 @@ KINETIC-NC allows skipping portions of the code by using the **SKIP** command. T
 Following lines show an example of how this is prepared in the G-code by the post-processor:
 
 ```G-code
-(Uncomment to skip until specified label)
-(Skip label must exist, than jump label is accepted)
-(SKIP Q0001)
-...
-...
-....
+(Modify SKIP label to jump to the respective section)
+(To activate, remove the brackets around SKIP and JUMP labels)
+(Skip label is without : and JUMP label is with :)
+(SKIP Q0002)
 (Q0001:)
 ```
 
 If needed the code can be activated by editing the code like:
 
 ```G-code
-SKIP Q0001
+SKIP Q0003
 ...
-...
+... many code lines
 ....
-Q0001:
+Q0003:
 ```
 
 The code between the SKIP command and the label is not executed. The SKIP command is typically used with **IF..THEN** constructs.
