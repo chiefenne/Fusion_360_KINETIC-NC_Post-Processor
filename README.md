@@ -182,6 +182,3 @@ NEXT
 ```
 
 Just change the number after the **REPEAT** keyword from **1** to a bigger number and the section should be executed the respective number of times.
-
-> [!TIP]  
-> In order to debug the post-processor code in FUSION 360, tick the "Open Nc-file in editor" option in the post-processor before saving. When the code change fails, the corresponding error message(s) are shown in the editor. Another indication that something went wrong, is an empty properties window at the lower right of the post-processor dialog.
