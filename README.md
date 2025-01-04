@@ -75,7 +75,7 @@ writeComment("Initial section");
 
 Write a comment line into the \*.nc file. The result in the file will look like this (the round brackets are added be the function *writeComment* to the text) and KINETIC-NC interprets this as a comment:
 
-```G-code
+```JavaScript
 (Initial section)
 ```
 Below lines add variables **#100, #101, #102** to the \*.nc file:
@@ -90,7 +90,7 @@ writeln("#102=0   (safe z for going to workpiece)");
  
 The values stored in these variables can be used later in the \*.nc file, e.g. for traversing like so:
 
-```G-code
+```JavaScript
 (Go to safe start position)
 G53
 G0 Z=#102
