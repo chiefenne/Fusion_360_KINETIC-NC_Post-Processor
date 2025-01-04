@@ -1,20 +1,17 @@
 
 # Fusion 360 KINETIC-NC Post-Processor
 
-> [!NOTE]  
-> CNC-Step have also their own post-processor. It did not exist at the time when this post was coded. It can be found in the post library for Autodesk Fusion (https://cam.autodesk.com/hsmposts). You need to search for "kinetic" since the post is not shown when scrolling down (there are too many listed). After seraching for "kinetic" the most recent version of the official CNC-Step post can be downloaded.
 
-A modified Autodesk Fusion 360 post-processor for the [HIGH-Z S-720/T](https://www.cnc-step.de/cnc-fraese-high-z-s-720t-kugelgewindetrieb-720x420mm) milling machine running the [KINETIC-NC](https://www.cnc-step.de/cnc-software/kinetic-nc-netzwerk-steuerungssoftware/) software, which both are from [CNC-Step](https://www.cnc-step.de). Autodesk Fusion post-processors are written in JavaScript and the documentation of the existing classes, functions, etc. is described in the [Autodesk CAM Post Processor Documentation](https://cam.autodesk.com/posts/reference/index.html).
 
-The post processor is based on the classical format [RS-274D](https://en.wikipedia.org/wiki/G-code) better known as  [G-code](https://en.wikipedia.org/wiki/G-code). The original version of this RS-274D implementation for the FUSION 360 post-processor comes from [Benezan Electronics](http://www.benezan-electronics.de/index.html "Click to open Benezan Electronics"). You can download their post-processor [here](http://www.benezan-electronics.de/downloads/Autodesk_HSM_beamicon2.zip). For convenience I saved a [copy](Autodesk_HSM_beamicon2.cps "Click to open Autodesk_HSM_beamicon2.cps") in this repository.
+A modified Autodesk Fusion 360 post-processor for the [HIGH-Z S-720/T](https://www.cnc-step.de/cnc-fraese-high-z-s-720t-kugelgewindetrieb-720x420mm) milling machine running the [KINETIC-NC](https://www.cnc-step.de/cnc-software/kinetic-nc-netzwerk-steuerungssoftware/) software, which both are from [CNC-Step](https://www.cnc-step.de).
 
-The reason why the Benezan post-processor works for the KINETIC-NC software is that the KINETIC-NC software is based on the BEAMICON2 software of Benezan.
+Autodesk Fusion post-processors are written in JavaScript and the documentation of the existing classes, functions, etc. is described in the [Autodesk CAM Post Processor Documentation](https://cam.autodesk.com/posts/reference/index.html).
 
-Thus, above postprocessor ran successfully in FUSION 360 and produced proper G-code for the KINETIC-NC software. This in turn controls the HIGH-Z S-720/T machine. 
+I made some modifications to the post-processor in order to make it more convenient for my typical operations. Be aware that the modifications are tested only the KINETIC-NC software an my personal machine. KINETIC-NC supports an additional set of specific commands which are not part of the RS-274D standard. There is also a macro language feature, which can be used to automate recurring tasks.
 
-I made some modifications to the post-processor in order to make it more convenient for my typical operations. Be aware that the modifications are tested only the KINETIC-NC software. KINETIC-NC supports an additional set of specific commands which are not part of the RS-274D standard. There is also a macro language featurem, which can be used to automate recurring tasks.
+Adding some commands to the post-processor is quite easy (after the obligatory learning curve). Mainly two functions are from the post API employed. The main function needed is [**writeln()**](https://cam.autodesk.com/posts/reference/classPostProcessor.html#aeb90bf455982d43746741f6dce58279c) which comes with the Autodesk JavaScript API. The second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is the comment format understood by KINETIC-NC).
 
-Adding some commands to the post-processor is quite easy (after the obligatory learning curve). Only two - already existing - functions are employed. The main function needed is [**writeln()**](https://cam.autodesk.com/posts/reference/classPostProcessor.html#aeb90bf455982d43746741f6dce58279c) which comes with the Autodesk JavaScript API. The second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is the comment format understood by KINETIC-NC).
+A third function written by myself **safeStartPositionChiefenne()** is used to go to a "safe" start position. In my setups I have most of the time a situation where my workpiece coordinate system is G54. Further I clamp the stock so that I can safely approach the G54 origin via x-coordinate being at 0 and then going along the y-axis. The spindel is typically left in z zero.
 
 ## Features
 
@@ -24,7 +21,7 @@ Adding some commands to the post-processor is quite easy (after the obligatory l
  * Safe tool position
    - Before and after tool change
    - At program end
-   - Implemented via subroutine calls
+   - Implemented via subroutine call *safeStartPositionChiefenne*
  * Jump labels between sections (e.g., 2D adaptive clearing, pockets, etc.)
    - Allows to execute individual sections separately
  * Repeat / Next within each section
@@ -38,17 +35,26 @@ Adding a section to [FUSION_360_KINETIC-NC_HIGH-Z_720T.cps](FUSION_360_KINETIC-N
 
 ```JavaScript
 writeln("");
-writeComment("Initial section");
-writeln("G54 (needed here so that offsets are being read)");
-writeln("#100=#900 (use x-offset of G54 for G53)");
-writeln("#101=0   (safe y for G53)");
-writeln("#102=0   (safe z for G53)");
+writeComment("Safe path to workpiece origin - derived automatically from G54 x-coordinate");
+writeComment("So we need to switch to G54 before running the program");
+writeBlock("G54");
+writeln("#100=#900 (read x-offset which was set in G54)");
+writeln("#101=0   (safe y for going to workpiece)");
+writeln("#102=0   (safe z for going to workpiece)");
 writeln('PRINT "x-offset = ";#100;"mm"');
-writeln('ASKBOOL "Continue with x-offset" I=2');
+writeln('PRINT "y-offset = ";#101;"mm"');
+writeln('PRINT "z-offset = ";#102;"mm"');
+writeln('ASKBOOL "Continue with offsets (if no then new offsets can be entered)?" I=2');
 writeln('IF #0=0 THEN');
-writeln('  ASKFLT "Enter x-offset" I=0.0 J=720.0');
+writeln('  ASKFLT "Enter x-offset (0:720)" I=0.0 J=720.0');
 writeln('  #100=#0');
 writeln('  PRINT "x-offset = ";#100;"mm"');
+writeln('  ASKFLT "Enter y-offset (0:420)" I=0.0 J=420.0');
+writeln('  #101=#0');
+writeln('  PRINT "y-offset = ";#101;"mm"');
+writeln('  ASKFLT "Enter z-offset (-50:0)" I=-50.0 J=0.0');
+writeln('  #102=#0');
+writeln('  PRINT "z-offset = ";#102;"mm"');
 writeln('ENDIF');
 writeln("");
 ```
@@ -73,10 +79,11 @@ Write a comment line into the \*.nc file. The result in the file will look like 
 Below lines add variables **#100, #101, #102** to the \*.nc file:
 
 ```JavaScript
-writeln("G54 (needed here so that offsets are being read)");
-writeln("#100=#900 (use x-offset of G54 for G53)");
-writeln("#101=0   (safe y for G53)");
-writeln("#102=0   (safe z for G53)");
+writeComment("So we need to switch to G54 before running the program");
+writeBlock("G54");
+writeln("#100=#900 (read x-offset which was set in G54)");
+writeln("#101=0   (safe y for going to workpiece)");
+writeln("#102=0   (safe z for going to workpiece)");
 ```
  
 The values stored in these variables can be used later in the \*.nc file, e.g. for traversing like so:
@@ -105,7 +112,7 @@ writes the following into the \*.nc file:
 N1000 T8 M6
 ```
 
-Which means command number 1000 (for example), tool number 8 (for example) and **M6** is tool change. So I know when the post-processor writes this line a tool-change will happen. Thus I surrounded it (shown below) by two lines which trigger a subroutine that performs the safe traversal to/from machine zero.
+Which means the command in line number 1000 (for example), tool number 8 (for example) and **M6** is tool change. So I know when the post-processor writes this line a tool-change will happen. Thus I surrounded it (shown below) by two lines which trigger a subroutine that performs the safe traversal to/from machine zero.
 
 So I added a safe path (by calling a subroutine) which moves the spindle automatically according to these variables before and after each tool change:
 
