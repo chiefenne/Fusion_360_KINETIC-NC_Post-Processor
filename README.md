@@ -13,7 +13,7 @@ Adding/modifying the functionality of the post-processor is convenient when usin
 
 Mainly two functions from the post API are employed. The main function needed is **writeln()** which comes with the Fusion JavaScript API. The second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is also the comment format understood by KINETIC-NC).
 
-A third function written by myself **safeStartPositionChiefenne()** is used to go to a "safe" start position. In my setups I have most of the time a situation where my workpiece coordinate system is G54. Further I clamp the stock so that I can safely approach the G54 origin. First I traverse at y=0 along the x-axis (to G54 X0), then I move along the y-axis (to G54 Y0). The spindel is typically left at z=0.
+A third function written by myself is **safeStartPositionChiefenne()**. This is used to go to a "safe" start position. In my setups I have most of the time a situation where my workpiece coordinate system is G54. Further I clamp the stock so that I can safely approach the G54 origin. First I traverse at y=0 along the x-axis (to G54 X0), then I move along the y-axis (to G54 Y0). The spindel is typically left at z=0.
 
 ## Features
 
