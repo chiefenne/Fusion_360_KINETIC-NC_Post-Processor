@@ -115,54 +115,6 @@ The M66 macro is stored in the following folder on the PC:
 
     C:\ProgramData\KinetiC-NC\macros
 
-In KINETIC-NC the M66 macro is called when there is an M6 command (tool change) in the G-code and the machine has no automatic tool change capability.
-
-## Subroutines
-
-KINETIC-NC allows following subroutine syntax:
-
- * M98 &rarr; call subroutine
- * P1234 &rarr; label of the subroutine (caller syntax)
- * O1234: &rarr; label of the subroutine (subroutine function starts here)
- * M99 &rarr; exit subroutine
-
-The calls for adding the subroutine G-code within the post-processor look like this:
-
-```JavaScript
-writeComment("Subroutine 1234");
-writeln("O1234:");
-writeln("G53 (machine coordinates)");
-writeln("G0 (go fast)");
-writeln("Z=#102 (safety height)");
-writeln("Y=#101");
-writeln("X=#100");
-writeln("G54 (workpiece coordinates)");
-writeln("M99 (End Subroutine 1234)");
-```
-
-Which would render in the \*.nc file as:
-
-```G-code
-(Subroutine 1234)
-O1234:
-G53 (machine coordinates)
-G0 (go fast)
-Z=#102 (safety height)
-Y=#101
-X=#100
-G54 (workpiece coordinates)
-M99 (End Subroutine 1234)
-```
-
-The subroutine uses the variables defined at the beginning of the \*.nc file. So I just need to update these variables once. Then for all subsequent tool changes there should be a safe path "to and from". When I use the same code but have a new workpiece clamped at another position, I again just update the G54 offset(s).
-
-The subroutine call can also point to an external file (not used in this post processor):
-```
-CALL "SUBD9@plug.txt"
-```
-
-In the same way, more functionality can be added to the post-processor or different *dialects* of the same post-processor could be created depending on the requirements.
-
 ## Example for using the jump labels
 
 KINETIC-NC allows skipping portions of the code by using the **SKIP** command. This comes in handy when in a longer NC program a certain section should be done later again, but some other operations not. In order to support this upfront, the respective code is added by the post-processor as comments, so that it just has to be uncommented when being used.
