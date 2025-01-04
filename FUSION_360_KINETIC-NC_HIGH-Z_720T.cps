@@ -295,6 +295,8 @@ function onSection() {
   // >>> chiefenne
   // write jump label between each section
   // this can later be used to run sections individually
+  var number_of__sections = getNumberOfSections();
+  var current_section = currentSection.getId();
   jumpLabel++;
   skipLabel = jumpLabel + 1;
 
@@ -304,7 +306,10 @@ function onSection() {
   writeComment("Modify SKIP label to jump to the respective section");
   writeComment("To activate, remove the brackets around SKIP and JUMP labels");
   writeComment("Skip label is without ':' and JUMP label is with ':'");
-  writeComment(skipLabelStr);
+  // write skip label only if not in the last section
+  if (current_section < number_of__sections-1) {
+    writeComment(skipLabelStr);
+  }
   writeComment(jumpLabelStr);
   writeln("");
   // <<< chiefenne
@@ -324,7 +329,7 @@ function onSection() {
       // >>> chiefenne
       // always make a manual tool change (even if not selected for the tool in the FUSION tool library)
       // writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(tool.getManualToolChange() ? 66 : 6));
-      writeComment(tool.comment);
+      writeComment(tool.comment + "T" + toolFormat.format(tool.number));
       writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(66));
       if (firstSection) {
           firstSection = false;
@@ -1003,9 +1008,9 @@ function writeToolBlock() {
   var show = getProperty("showSequenceNumbers");
   setProperty("showSequenceNumbers", (show == "true" || show == "toolChange") ? "true" : "false");
   // >>> chiefenne
-  writeComment("MANUAL TOOL CHANGE TO T" + toolFormat.format(tool.number));
   if (!firstSection) {
       safeStartPositionChiefenne();
+  writeComment("MANUAL TOOL CHANGE TO T" + toolFormat.format(tool.number));
   }
   // <<< chiefenne
 
@@ -1772,19 +1777,26 @@ function writeProgramHeader() {
 
         // >>> chiefenne
         writeln("");
-        writeComment("Safe path to workpiece origin - derived automatically from G54 origin");
-        writeln("G54");
+        writeComment("Safe path to workpiece origin - derived automatically from G54 x-coordinate");
+        writeComment("So we need to switch to G54 before running the program");
+        writeBlock("G54");
         writeln("#100=#900 (read x-offset which was set in G54)");
         writeln("#101=0   (safe y for going to workpiece)");
         writeln("#102=0   (safe z for going to workpiece)");
         writeln('PRINT "x-offset = ";#100;"mm"');
         writeln('PRINT "y-offset = ";#101;"mm"');
         writeln('PRINT "z-offset = ";#102;"mm"');
-        writeln('ASKBOOL "Continue with offsets?" I=2');
+        writeln('ASKBOOL "Continue with offsets (if no then new offsets can be entered)?" I=2');
         writeln('IF #0=0 THEN');
-        writeln('  ASKFLT "Enter x-offset" I=0.0 J=720.0');
+        writeln('  ASKFLT "Enter x-offset (0:720)" I=0.0 J=720.0');
         writeln('  #100=#0');
         writeln('  PRINT "x-offset = ";#100;"mm"');
+        writeln('  ASKFLT "Enter y-offset (0:420)" I=0.0 J=420.0');
+        writeln('  #101=#0');
+        writeln('  PRINT "y-offset = ";#101;"mm"');
+        writeln('  ASKFLT "Enter z-offset (-50:0)" I=-50.0 J=0.0');
+        writeln('  #102=#0');
+        writeln('  PRINT "z-offset = ";#102;"mm"');
         writeln('ENDIF');
         writeln("");
         // <<< chiefenne
