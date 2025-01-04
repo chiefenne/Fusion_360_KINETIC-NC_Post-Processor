@@ -10,9 +10,9 @@
   FORKID {BF23EE63-720E-495A-80A8-74D1F29C8694}
 */
 
-description = "KinetiC-NC";
-vendor = "CNC-STEP";
-vendorUrl = "https://www.cnc-step.com/";
+description = "KinetiC-NC post processor";
+vendor = "chiefenne";
+vendorUrl = "https://github.com/chiefenne/Fusion_360_KINETIC-NC_Post-Processor";
 
 // >>>>> INCLUDED FROM ../common/beamicon2 mill.cps
 if (!description) {
@@ -24,7 +24,7 @@ certificationLevel = 2;
 minimumRevision = 45917;
 
 if (!longDescription) {
-  longDescription = subst("Generic post for %1", description);
+  longDescription = subst("Generic post for %1 modified by chiefenne.", description);
 }
 
 extension = "nc";
@@ -162,6 +162,11 @@ var gRetractModal = createOutputVariable({}, gFormat); // modal group 10 // G98-
 var fourthAxisClamp = createOutputVariable({}, mFormat);
 var fifthAxisClamp = createOutputVariable({}, mFormat);
 
+// >>> chiefenne
+var jumpLabel = 0;
+var firstSection = true;
+// <<< chiefenne
+
 var settings = {
   coolant: {
     // samples:
@@ -203,7 +208,9 @@ var settings = {
     homeXY                    : {onIndexing:false, onToolChange:false, onProgramEnd:{axes:[X, Y]}} // Specifies when XY should be homed in XY (sample: onIndexing:[X,Y]). Options can be combined
   },
   comments: {
-    permittedCommentChars: " abcdefghijklmnopqrstuvwxyz0123456789.,=_-", // letters are not case sensitive, use option 'outputFormat' below. Set to 'undefined' to allow any character
+    // >>> chiefenne - added ":" to permittedCommentChars
+    permittedCommentChars: " abcdefghijklmnopqrstuvwxyz0123456789:.,=_-", // letters are not case sensitive, use option 'outputFormat' below. Set to 'undefined' to allow any character
+    // <<< chiefenne
     prefix               : "(", // specifies the prefix for the comment
     suffix               : ")", // specifies the suffix for the comment
     outputFormat         : "ignoreCase", // can be set to "upperCase", "lowerCase" and "ignoreCase". Set to "ignoreCase" to write comments without upper/lower case formatting
@@ -232,6 +239,30 @@ function onOpen() {
   if (!getProperty("separateWordsWithSpace")) {
     setWordSeparator("");
   }
+
+  // >>> chiefenne
+  // Add description of features and modifications before the program
+  writeln("");
+  writeln("This G-code is the result of a post-processor modification by chiefenne.");
+  writeln("The original post-processor from CNC-STEP was modified to include additional features.");
+  writeln("The postprocessor is intended for use with the KinetiC-NC control software from CNC-STEP.");
+  writeln("For more information, please visit the CNC-STEP website at https://www.cnc-step.com/");
+  writeln("Link to the original post processor on the Fusion website: https://cam.autodesk.com/posts/post.php?name=kinetic-nc");
+  writeln("Link to the modified post processor on Github: https://github.com/chiefenne/Fusion_360_KINETIC-NC_Post-Processor");
+  writeln("");
+  writeln("The following modifications have been made to the original post-processor:");
+  writeln(" - Intial section which supports a specific safe path to the workpiece origin (G54)");
+  writeln(" - Jump labels between sections (e.g., 2D adaptive clearing, pockets, etc.)");
+  writeln("   Allows to execute individual sections separately");
+  writeln(" - Repeat / Next with counter for each operation");
+  writeln("   Allows to redo sections multiple times");
+  writeln(" - Allow ':' as a permitted character in comments");
+  writeln(" - Swap spindle speed and direction, M3 S12000 instead of S12000 M3");
+  writeln("   This fixes a problem which sometimes occured");
+  writeln("");
+  // <<< chiefenne
+
+
   writeln("%");
   writeComment(programName);
   writeComment(programComment);
