@@ -106,43 +106,7 @@ I normally use only the x-coordinate of the offset (#900) because this fits for 
 
 When the G-code requests to change the tool, the spindle needs to drive back to machine zero, the new tool (inserted manually) needs to be measured and later the spindle should go back to the workpiece.
 
-This line from the original post-processor:
-
-```JavaScript
-writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
-```
-
-writes the following into the \*.nc file:
-
-```G-code
-N1000 T8 M6
-```
-
-Which means the command in line number 1000 (for example), tool number 8 (for example) and **M6** is tool change. So I know when the post-processor writes this line a tool-change will happen. Thus I surrounded it (shown below) by two lines which trigger a subroutine that performs the safe traversal to/from machine zero.
-
-So I added a safe path (by calling a subroutine) which moves the spindle automatically according to these variables before and after each tool change:
-
-```JavaScript
-writeComment('Go to safe position before tool change');
-writeln('M98 P1234 (call subroutine 1234)');
-onCommand(COMMAND_COOLANT_OFF);
-writeBlock("T" + toolFormat.format(tool.number), mFormat.format(6));
-writeComment('Go to safe position after tool change');
-writeln('M98 P1234 (call subroutine 1234)');
-```
-
-In the G-code this renders to:
-
-```G-code
-(Go to safe position before tool change)
-M98 P1234 (call subroutine 1234)
-N25 M9
-N30 T18 M6
-(Go to safe position after tool change)
-M98 P1234 (call subroutine 1234)
-```
-
-As can be seen also the coolant off (M9) needed to be wrapped. Found this by testing.
+So I added a safe path (by calling safeStartPositionChiefenne) which moves the spindle automatically according to these variables before and after each tool change.
 
 > [!NOTE]  
 >  A tool change requires the tool to be measured again. For this I added the G79 command to the [M66](M66.txt) macro, which resides in the following folder on the PC:
