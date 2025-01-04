@@ -109,11 +109,13 @@ When the G-code requests to change the tool, the spindle needs to drive back to 
 So I added a safe path (by calling safeStartPositionChiefenne) which moves the spindle automatically according to these variables before and after each tool change.
 
 > [!NOTE]  
->  A tool change requires the tool to be measured again. For this I added the G79 command to the [M66](M66.txt) macro, which resides in the following folder on the PC:
+>  A tool change requires the tool to be measured again. For this I added the G79 command to the [M66](M66.txt) macro. **So in order for this version of the post-processor to work smoothly you need to update your M66.txt accordingly.** 
+
+The M66 macro is stored in the following folder on the PC:
 
     C:\ProgramData\KinetiC-NC\macros
 
-In KINETIC-NC the M66 macro is called when there is an M6 command (tool change) in the G-code and the machine has no automatic tool change capability. **So in order for this version of the post-processor to work smoothly you need to update your M66.txt accordingly.**
+In KINETIC-NC the M66 macro is called when there is an M6 command (tool change) in the G-code and the machine has no automatic tool change capability.
 
 ## Subroutines
 
