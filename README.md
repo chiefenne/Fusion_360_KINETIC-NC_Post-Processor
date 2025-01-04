@@ -7,7 +7,7 @@ A modified Autodesk Fusion 360 post-processor for the [HIGH-Z S-720/T](https://w
 
 Autodesk Fusion post-processors are written in JavaScript and the documentation of the existing classes, functions, etc. is described in the [Autodesk CAM Post Processor Documentation](https://cam.autodesk.com/posts/reference/index.html).
 
-I made some modifications to the post-processor in order to make it more convenient for my typical operations. Be aware that the modifications are tested only the KINETIC-NC software an my personal machine. KINETIC-NC supports an additional set of specific commands which are not part of the RS-274D standard. There is also a macro language feature, which can be used to automate recurring tasks.
+I made some modifications to the post-processor provided by CNC-Step, in order to make it more convenient for my typical operations. Be aware that the modifications are tested only the KINETIC-NC software an my personal machine. KINETIC-NC supports an additional set of specific commands which are not part of the RS-274D standard. There is also a macro language feature, which can be used to automate recurring tasks.
 
 Adding some commands to the post-processor is quite easy (after the obligatory learning curve). Mainly two functions are from the post API employed. The main function needed is [**writeln()**](https://cam.autodesk.com/posts/reference/classPostProcessor.html#aeb90bf455982d43746741f6dce58279c) which comes with the Autodesk JavaScript API. The second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is the comment format understood by KINETIC-NC).
 
