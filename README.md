@@ -9,9 +9,11 @@ Autodesk Fusion post-processors are written in JavaScript and the documentation 
 
 I made some modifications to the post-processor provided by CNC-Step, in order to make it more convenient for my typical operations. Be aware, that the modifications are tested only the KINETIC-NC software and on my personal machine. KINETIC-NC supports an additional set of specific commands which are not part of the RS-274D standard. KINETIC-NC supports also a macro language, which can be used to automate recurring tasks.
 
-Adding some commands to the post-processor is quite easy (after the obligatory learning curve). Mainly two functions are from the post API employed. The main function needed is [**writeln()**](https://cam.autodesk.com/posts/reference/classPostProcessor.html#aeb90bf455982d43746741f6dce58279c) which comes with the Autodesk JavaScript API. The second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is the comment format understood by KINETIC-NC).
+Adding/modifying the functionality of the post-processor is convenient when using the [Visual Studio Code](https://code.visualstudio.com/) editor and the [Autodesk Fusion Post Processor Utility](https://marketplace.visualstudio.com/items?itemName=Autodesk.hsm-post-processor) extension. 
 
-A third function written by myself **safeStartPositionChiefenne()** is used to go to a "safe" start position. In my setups I have most of the time a situation where my workpiece coordinate system is G54. Further I clamp the stock so that I can safely approach the G54 origin via x-coordinate being at 0 and then going along the y-axis. The spindel is typically left in z zero.
+Mainly two functions from the post API are employed. The main function needed is **writeln()** which comes with the Fusion JavaScript API. The second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is also the comment format understood by KINETIC-NC).
+
+A third function written by myself **safeStartPositionChiefenne()** is used to go to a "safe" start position. In my setups I have most of the time a situation where my workpiece coordinate system is G54. Further I clamp the stock so that I can safely approach the G54 origin. First I traverse at y=0 along the x-axis (to G54 X0), then I move along the y-axis (to G54 Y0). The spindel is typically left at z=0.
 
 ## Features
 
