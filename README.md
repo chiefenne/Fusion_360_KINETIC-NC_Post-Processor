@@ -182,3 +182,8 @@ NEXT
 ```
 
 Just change the number after the **REPEAT** keyword from **1** to a bigger number and the section should be executed the respective number of times.
+
+## Complementary tools
+
+To further streamline the FUSION-to-KINETIC-NC workflow, a tool library converter has been developed as well.
+See [FUSION to KINETIC-NC tool library converter](https://github.com/chiefenne/FUSION_to_KINETIC-NC_tool_library_converter).
