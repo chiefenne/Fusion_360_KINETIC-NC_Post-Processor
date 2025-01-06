@@ -259,18 +259,24 @@ function onOpen() {
   writeln(" - Swap spindle speed and direction, M3 S12000 instead of S12000 M3");
   writeln("   This fixes a problem which sometimes occured");
   writeln("");
+  writeln(" - KINETIC-NC ignores following G-codes (as they activate settings which are default anyway):");
+  writeln(" - G17, G18, G19, G50, G69, G94, G97");
+  writeln("");
   // <<< chiefenne
-
-
+  
+  
   writeln("%");
   writeComment(programName);
   writeComment(programComment);
   writeProgramHeader();
-
+  
   // absolute coordinates and feed per min
-  writeBlock(gAbsIncModal.format(90), gFeedModeModal.format(94));
-  writeBlock(gPlaneModal.format(17));
-  writeBlock(gUnitModal.format(unit == MM ? 21 : 20));
+  // >>> chiefenne
+  // writeBlock(gAbsIncModal.format(90), gFeedModeModal.format(94));
+  // writeBlock(gPlaneModal.format(17));
+  writeBlock(gAbsIncModal.format(90), "(absolute coordinates)");
+  // <<< chiefenne
+  writeBlock(gUnitModal.format(unit == MM ? 21 : 20), "(21 = units in mm, 20 = units in inches)");
   validateCommonParameters();
 }
 
@@ -286,11 +292,14 @@ function onSection() {
     if (insertToolCall && !isFirstSection()) {
       onCommand(COMMAND_STOP_SPINDLE);
     }
-    writeRetract(Z); // retract
+    // >>> chiefenne
+    // writeRetract(Z); // retract
+    safeHomePositionChiefenne();
+    // <<< chiefenne
   }
 
   writeln("");
-
+  
   // >>> chiefenne
   // write jump label between each section
   // this can later be used to run sections individually
@@ -298,13 +307,16 @@ function onSection() {
   var current_section = currentSection.getId();
   jumpLabel++;
   skipLabel = jumpLabel + 1;
-
+  
   let jumpLabelStr = "(" + "Q" + String(jumpLabel).padStart(4, "0") + ":)";
   let skipLabelStr = "(SKIP " + "Q" + String(skipLabel).padStart(4, "0") + ")";
-
+  
   writeComment("Modify SKIP label to jump to the respective section");
   writeComment("To activate, remove the brackets around SKIP and JUMP labels");
   writeComment("Skip label is without ':' and JUMP label is with ':'");
+  writeComment("NOTE: be careful when doing this as it can lead to unexpected results");
+  writeComment("NOTE: check if positioning at jump label is correct");
+  writeln("");
   // write skip label only if not in the last section
   if (current_section < number_of__sections-1) {
     writeComment(skipLabelStr);
@@ -329,7 +341,7 @@ function onSection() {
       // always make a manual tool change (even if not selected for the tool in the FUSION tool library)
       // writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(tool.getManualToolChange() ? 66 : 6));
       if (!isFirstSection()) {
-        safeStartPositionChiefenne();
+        // safeStartPositionChiefenne();
       }
       writeComment(tool.comment + "T" + toolFormat.format(tool.number));
       writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(66));
@@ -342,7 +354,10 @@ function onSection() {
   startSpindle(tool, insertToolCall);
 
   // Output modal commands here
-  writeBlock(gPlaneModal.format(17), gAbsIncModal.format(90), gFeedModeModal.format(94));
+  // >>> chiefenne: G17 and G94 are not used in KINETIC-NC
+  // writeBlock(gPlaneModal.format(17), gAbsIncModal.format(90), gFeedModeModal.format(94));
+  writeBlock(gAbsIncModal.format(90), "(absolute coordinates)");
+  // <<< chiefenne
 
   // set wcs
   var wcsIsRequired = true;
@@ -659,16 +674,16 @@ function onClose() {
   optionalSection = false;
   onCommand(COMMAND_STOP_SPINDLE);
   onCommand(COMMAND_COOLANT_OFF);
-    // >>> chiefenne
-    // writeRetract(Z); // retract
-    // forceWorkPlane();
-    // setWorkPlane(new Vector(0, 0, 0)); // reset working plane
-    // if (getSetting("retract.homeXY.onProgramEnd", false)) {
-    //   writeRetract(settings.retract.homeXY.onProgramEnd);
-    // }
-    safeStartPositionChiefenne();
-    writeln("G28"); // home all axes from safe position
-    // <<< chiefenne
+  // >>> chiefenne
+  // writeRetract(Z); // retract
+  // forceWorkPlane();
+  // setWorkPlane(new Vector(0, 0, 0)); // reset working plane
+  // if (getSetting("retract.homeXY.onProgramEnd", false)) {
+  //   writeRetract(settings.retract.homeXY.onProgramEnd);
+  // }
+  safeStartPositionChiefenne();
+  // writeln("G28"); // home all axes from safe position
+  // <<< chiefenne
 
   writeBlock(mFormat.format(30)); // program end
   writeln("%");
@@ -1006,12 +1021,6 @@ function onComment(text) {
 function writeToolBlock() {
   var show = getProperty("showSequenceNumbers");
   setProperty("showSequenceNumbers", (show == "true" || show == "toolChange") ? "true" : "false");
-  // >>> chiefenne
-  if (!isFirstSection) {
-      safeStartPositionChiefenne();
-  writeComment("MANUAL TOOL CHANGE TO T" + toolFormat.format(tool.number));
-  }
-  // <<< chiefenne
 
   writeBlock(arguments);
   setProperty("showSequenceNumbers", show);
@@ -1779,24 +1788,10 @@ function writeProgramHeader() {
         writeComment("Safe path to workpiece origin - derived automatically from G54 x-coordinate");
         writeComment("So we need to switch to G54 before running the program");
         writeBlock("G54");
-        writeln("#100=#900 (read x-offset which was set in G54)");
-        writeln("#101=0   (safe y for going to workpiece)");
-        writeln("#102=0   (safe z for going to workpiece)");
-        writeln('PRINT "x-offset = ";#100;"mm"');
-        writeln('PRINT "y-offset = ";#101;"mm"');
-        writeln('PRINT "z-offset = ";#102;"mm"');
-        writeln('ASKBOOL "Continue with offsets (if no then new offsets can be entered)?" I=2');
-        writeln('IF #0=0 THEN');
-        writeln('  ASKFLT "Enter x-offset (0:720)" I=0.0 J=720.0');
-        writeln('  #100=#0');
-        writeln('  PRINT "x-offset = ";#100;"mm"');
-        writeln('  ASKFLT "Enter y-offset (0:420)" I=0.0 J=420.0');
-        writeln('  #101=#0');
-        writeln('  PRINT "y-offset = ";#101;"mm"');
-        writeln('  ASKFLT "Enter z-offset (-50:0)" I=-50.0 J=0.0');
-        writeln('  #102=#0');
-        writeln('  PRINT "z-offset = ";#102;"mm"');
-        writeln('ENDIF');
+        writeln('PRINT "x-offset = ";#900;" mm"');
+        writeln('PRINT "y-offset = ";#901;" mm"');
+        writeln('PRINT "z-offset = ";#903;" mm"');
+        writeln('ASKBOOL "Continue with offsets?" I=2');
         writeln("");
         // <<< chiefenne
 
@@ -2069,7 +2064,10 @@ function writeInitialPositioning(position, isRequired, codes1, codes2) {
 
   forceModals(gMotionModal);
   writeStartBlocks(isRequired, function() {
-    var modalCodes = formatWords(gAbsIncModal.format(90), gPlaneModal.format(17));
+    // >>> chiefenne - G17 is not used in KINETIC-NC
+    // var modalCodes = formatWords(gAbsIncModal.format(90), gPlaneModal.format(17));
+    var modalCodes = formatWords(gAbsIncModal.format(90));
+    // <<< chiefenne
     if (typeof disableLengthCompensation == "function") {
       disableLengthCompensation(!isRequired); // cancel tool length compensation prior to enabling it, required when switching G43/G43.4 modes
     }
@@ -2177,11 +2175,43 @@ function safeStartPositionChiefenne() {
     //   xy ... safe position to move to stock origin (G54)
     //
     //
-    writeComment("Go to safe start position");
-    writeln("G53");
-    writeln("G0 Z=#102"); // lift spindle (will b typically at Z=0 in machine coordinates G53)
-    writeln("G0 Y=#101"); // move to safe position in Y (will be typically at Y=0 in machine coordinates G53)
-    writeln("G0 X=#100"); // move to safe position in X (will be typically at X of stock zero in machine coordinates G53)
+    writeln("");
+    writeComment("Go safe to workpiece origin");
+    writeBlock(gAbsIncModal.format(53), "(machine coordinates)"); 
+    writeBlock("G0 Z0  (lift spindle)"); 
+    writeBlock(gAbsIncModal.format(54), "(workpiece coordinates)"); 
+    writeBlock("G0 X0 (go to workpiece origin in x)"); 
+    writeBlock("G0 Y0 (go to workpiece origin in y)"); 
+    writeln("");
+
+}
+
+function safeHomePositionChiefenne() {
+    // Run tool to safe position (see chiefenne mods function writeProgramHeader)
+    //
+    //   machine x,y extent
+    //   -----------------------------
+    //   |                           |    
+    //   |                           |    
+    //   |        ----------         |    
+    //   |        | stock  |         |    
+    //   |        |        |         |    
+    //   |        o---------         |    
+    //   |                           |    
+    //   |                           |    
+    //   0 -------xy------------------    
+    //
+    //   0  ... machine zero (G53)
+    //   o  ... stock zero (G54)
+    //   xy ... safe position to move to stock origin (G54)
+    //
+    //
+    writeln("");
+    writeComment("Go safe to home position: G28 would go shortest path");
+    writeBlock(gAbsIncModal.format(53), "(machine coordinates)");
+    writeBlock("G0 Z0  (lift spindle)"); 
+    writeBlock("G0 Y0  (move to Y0 before going to home position)"); 
+    writeBlock("G0 X0  (move to machine home position)"); 
 
 }
 // <<< chiefenne
