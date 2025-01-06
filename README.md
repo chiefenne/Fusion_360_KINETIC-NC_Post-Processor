@@ -11,27 +11,27 @@ Adding/modifying the functionality of the post-processor is convenient when usin
 
 Mainly two functions from the post API are employed. The main function needed is **writeln()** which comes with the Fusion JavaScript API. The second one is **writeComment()** which is a wrapper around **writeln()** that just adds brackets before and after the text (this is also the comment format understood by KINETIC-NC).
 
-A third function written by myself is **safeStartPositionChiefenne()**. This is used to go to a "safe" start position. In my setups I have most of the time a situation where my workpiece coordinate system is G54. Further I clamp the stock so that I can safely approach the G54 origin. First I traverse at y=0 along the x-axis (to G54 X0), then I move along the y-axis (to G54 Y0). The spindel is typically left at z=0.
+A third function written by myself is **safeStartPositionChiefenne()**. This is used to go to a "safe" start position. In my setups I have most of the time a situation where my workpiece coordinate system is G54. Further I clamp the stock so that I can safely approach the G54 origin. First I traverse at y=0 along the x-axis (G54 X0), then I move along the y-axis (G54 Y0). The spindel is left at z=0.
 
 ## Features
 
- * Initial section
-   - Auto-read x-position of actual G54
-   - Request user to confirm or enter alternative offset
- * Safe tool position
-   - Before and after tool change
-   - At program end
-   - Implemented via subroutine call *safeStartPositionChiefenne*
+ * General
+   - Use the G54 workpiece origin to automate a safe path to the stock (instead of going straight from the machine origin).
+   - Prompt the user to confirm, while displaying the current G54 offsets in the KINETIC-NC info window.
+ * How it is done (and when)
+   - Implemented via subroutine call *safeStartPositionChiefenne()*
+   - Before and after tool change (function *onSection()* when tool change is required *insertToolCall*)
+   - At program end (function *onClose()*)
  * Jump labels between sections (e.g., 2D adaptive clearing, pockets, etc.)
    - Allows to execute individual sections separately
  * Repeat / Next within each section
    - Allows easily to redo sections multiple times
- * Remove entries not understood by KINETIC-NC
+ * Remove entries not understood by KINETIC-NC (works meanwhile, but still is removed to run on older versions)
    - Remove **%** from last line
 
-## Example code snippets
+## Code snippets
 
-### Example 1
+### Snippet 1
 Adding a section to [FUSION_360_KINETIC-NC_HIGH-Z_720T.cps](FUSION_360_KINETIC-NC_HIGH-Z_720T.cps) which will always be written to the **\*.nc** file when using this post-processor:
 
 ```JavaScript
@@ -51,23 +51,31 @@ writeln("");
 ```JavaScript
 writeln("");
 ```
-
 Adds an empty line because the string **""** is empty.
 
 ```JavaScript
-writeComment("Initial section");
+writeBlock("G54");
+```
+In the *.nc file this renders to:.
+```JavaScript
+N10 G54
+```
+The line numbers (Nxx) are automatically generated when using writeBlock().
+
+```JavaScript
+writeComment("This is a comment");
 ```
 
 Write a comment line into the \*.nc file. The result in the file will look like this (the round brackets are added be the function *writeComment* to the text) and KINETIC-NC interprets this as a comment:
 
 ```JavaScript
-(Initial section)
+(This is a comment)
 ```
 
-### Example 2
+### Snippet 2
 
 ```JavaScript
-function safeStartPositionChiefenne() {
+function safeHomePositionChiefenne() {
     // Run tool to safe position (see chiefenne mods function writeProgramHeader)
     //
     //   machine x,y extent
@@ -88,36 +96,34 @@ function safeStartPositionChiefenne() {
     //
     //
     writeln("");
-    writeComment("Go safe to workpiece origin");
-    writeBlock(gAbsIncModal.format(53), "(machine coordinates)"); 
+    writeComment("Go safe to home position: G28 would go shortest path");
+    writeBlock(gAbsIncModal.format(53), "(machine coordinates)");
     writeBlock("G0 Z0  (lift spindle)"); 
-    writeBlock(gAbsIncModal.format(54), "(workpiece coordinates)"); 
-    writeBlock("G0 X0 (go to workpiece origin in x)"); 
-    writeBlock("G0 Y0 (go to workpiece origin in y)"); 
-    writeln("");
+    writeBlock("G0 Y0  (move to Y0 before going to home position)"); 
+    writeBlock("G0 X0  (move to machine home position)"); 
 
 }
 ```
 
-When calling the function ***safeStartPositionChiefenne()*** in the post processor it renders to following G-code:
+When calling the function ***safeStartPositionChiefenne()*** in the post processor it renders to the following G-code:
 
 ```JavaScript
-(Go safe to workpiece origin)
-N50 G53 (machine coordinates)
-N55 G0 Z0  (lift spindle)
-N60 G54 (workpiece coordinates)
-N65 G0 X0 (go to workpiece origin in x)
-N70 G0 Y0 (go to workpiece origin in y)
+(Moving to workpiece origin)
+N30 G53 (machine coordinates)
+N35 G0 Z0  (lift spindle)
+N40 G54 (workpiece coordinates)
+N45 G1 X0 F1000 (go slow to workpiece origin X)
+N50 G1 Y0 F1000 (go slow to workpiece origin Y)
 ```
 
-The line numbers N50 to N70 are arbitray here. Thes are automatically created depending on the code position.
+The line numbers (Nxx) are automatically generated when using *writeBlock()*.
 
 
 In the past I added those lines always manually at sevaral positions in the  \*.nc file in order to move safely to the workpiece without crashing into any clamps. For my typical setups I then just needed to adapt the initial x-coordinate in the initial section.
 
-In order to overcome the manual editing, it is now **automated based on the settings of G54**. This is the workpiece (stock) offset in most of my setups. KINETIC-NC stores the coordinates of the offsets in non-volatile variables (they are saved across sessions even when the machine is off). The offsets for x, y, and z are stored in the variables #900, #901, #902 respectively.
+In order to overcome the manual editing, it is now **automated based on the settings of G54**. This is the workpiece (stock) offset in most of my setups. KINETIC-NC stores the coordinates of the offsets in non-volatile variables (they are saved across sessions even when the machine is off). The offsets for x, y, and z are stored in the variables #900, #901, #902 respectively. These are now used only for printing them to the information window.
 
-I added a funtion ( ***safeStartPositionChiefenne()***) which moves the spindle automatically according to these variables (meanwhile directly G54) before and after each tool change.
+I added the funtion ***safeStartPositionChiefenne()*** which moves the spindle automatically according to the G54 offests. This is done before and after each tool change and at program end.
 
 > [!NOTE]  
 >  A tool change requires the tool to be measured again. For this I added the G79 command to the [M66](M66.txt) macro. **So in order for this version of the post-processor to work smoothly you need to update your M66.txt accordingly.** 
@@ -125,6 +131,17 @@ I added a funtion ( ***safeStartPositionChiefenne()***) which moves the spindle 
 The M66 macro is stored in the following folder on the PC:
 
     C:\ProgramData\KinetiC-NC\macros
+
+> [!NOTE] 
+ > "C:\ProgramData" normally is not visible in the Windows explorer (unless otherwise set by the user). So just enter the path as schon in the figure below in Windows explorer.
+
+<div style="text-align: center;">
+    <p style="border: 1px solid #ccc; padding: 5px; display: inline-block;">
+        <img src="images/KINETIC-NC-ProgramData.png" alt="Kinetic NC ProgramData" width="400" />
+    </p>
+</div>
+ 
+
 
 ## Example for using the jump labels
 
