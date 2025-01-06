@@ -294,7 +294,7 @@ function onSection() {
     }
     // >>> chiefenne
     // writeRetract(Z); // retract
-    safeHomePositionChiefenne();
+    // safeHomePositionChiefenne();
     // <<< chiefenne
   }
 
@@ -341,11 +341,11 @@ function onSection() {
       // always make a manual tool change (even if not selected for the tool in the FUSION tool library)
       // writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(tool.getManualToolChange() ? 66 : 6));
       if (!isFirstSection()) {
-        // safeStartPositionChiefenne();
+        safeStartPositionChiefenne({ afterToolChange: false });
       }
       writeComment(tool.comment + "T" + toolFormat.format(tool.number));
       writeToolBlock("T" + toolFormat.format(tool.number), mFormat.format(66));
-      safeStartPositionChiefenne();
+        safeStartPositionChiefenne({ afterToolChange: true });
       // <<< chiefenne
     } else {
       writeToolCall(tool, insertToolCall);
@@ -681,8 +681,7 @@ function onClose() {
   // if (getSetting("retract.homeXY.onProgramEnd", false)) {
   //   writeRetract(settings.retract.homeXY.onProgramEnd);
   // }
-  safeStartPositionChiefenne();
-  // writeln("G28"); // home all axes from safe position
+    safeStartPositionChiefenne({ afterToolChange: false });
   // <<< chiefenne
 
   writeBlock(mFormat.format(30)); // program end
@@ -2155,35 +2154,27 @@ function getOffsetCode() {
 // <<<<< INCLUDED FROM ../common/beamicon2 mill.cps
 
 // >>> chiefenne
-function safeStartPositionChiefenne() {
-    // Run tool to safe position (see chiefenne mods function writeProgramHeader)
-    //
-    //   machine x,y extent
-    //   -----------------------------
-    //   |                           |    
-    //   |                           |    
-    //   |        ----------         |    
-    //   |        | stock  |         |    
-    //   |        |        |         |    
-    //   |        o---------         |    
-    //   |                           |    
-    //   |                           |    
-    //   0 -------xy------------------    
-    //
-    //   0  ... machine zero (G53)
-    //   o  ... stock zero (G54)
-    //   xy ... safe position to move to stock origin (G54)
-    //
-    //
+function safeStartPositionChiefenne({ afterToolChange = false } = {}) {
     writeln("");
-    writeComment("Go safe to workpiece origin");
-    writeBlock(gAbsIncModal.format(53), "(machine coordinates)"); 
-    writeBlock("G0 Z0  (lift spindle)"); 
-    writeBlock(gAbsIncModal.format(54), "(workpiece coordinates)"); 
-    writeBlock("G0 X0 (go to workpiece origin in x)"); 
-    writeBlock("G0 Y0 (go to workpiece origin in y)"); 
+    if (afterToolChange) {
+        writeComment("Moving to workpiece origin");
+        writeBlock("G53 (machine coordinates)"); 
+        writeBlock("G0 Z0  (lift spindle)");
+        writeBlock("G54 (workpiece coordinates)"); 
+        writeBlock("G1 X0 F1000 (go slow to workpiece origin X)"); 
+        writeBlock("G1 Y0 F1000 (go slow to workpiece origin Y)");
+    } else {
+        writeComment("First move to workpiece origin and then to machine home");
+        writeBlock("G53 (machine coordinates)"); 
+        writeBlock("G0 Z0  (lift spindle)");
+        writeBlock("G54 (workpiece coordinates)"); 
+        writeBlock("G1 X0 F1000 (go slow to workpiece origin X)"); 
+        writeBlock("G1 Y0 F1000 (go slow to workpiece origin Y)");
+        writeBlock("G53 (machine coordinates)");
+        writeBlock("G1 Y0 F1000 (go slow to machine origin Y)");
+        writeBlock("G1 X0 F1000 (go slow to machine origin X)"); 
+    }
     writeln("");
-
 }
 
 function safeHomePositionChiefenne() {
