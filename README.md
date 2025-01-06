@@ -38,24 +38,10 @@ writeln("");
 writeComment("Safe path to workpiece origin - derived automatically from G54 x-coordinate");
 writeComment("So we need to switch to G54 before running the program");
 writeBlock("G54");
-writeln("#100=#900 (read x-offset which was set in G54)");
-writeln("#101=0   (safe y for going to workpiece)");
-writeln("#102=0   (safe z for going to workpiece)");
-writeln('PRINT "x-offset = ";#100;"mm"');
-writeln('PRINT "y-offset = ";#101;"mm"');
-writeln('PRINT "z-offset = ";#102;"mm"');
-writeln('ASKBOOL "Continue with offsets (if no then new offsets can be entered)?" I=2');
-writeln('IF #0=0 THEN');
-writeln('  ASKFLT "Enter x-offset (0:720)" I=0.0 J=720.0');
-writeln('  #100=#0');
-writeln('  PRINT "x-offset = ";#100;"mm"');
-writeln('  ASKFLT "Enter y-offset (0:420)" I=0.0 J=420.0');
-writeln('  #101=#0');
-writeln('  PRINT "y-offset = ";#101;"mm"');
-writeln('  ASKFLT "Enter z-offset (-50:0)" I=-50.0 J=0.0');
-writeln('  #102=#0');
-writeln('  PRINT "z-offset = ";#102;"mm"');
-writeln('ENDIF');
+writeln('PRINT "x-offset = ";#900;" mm"');
+writeln('PRINT "y-offset = ";#901;" mm"');
+writeln('PRINT "z-offset = ";#903;" mm"');
+writeln('ASKBOOL "Continue with offsets?" I=2');
 writeln("");
 ```
 
