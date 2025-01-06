@@ -681,11 +681,13 @@ function onClose() {
   // if (getSetting("retract.homeXY.onProgramEnd", false)) {
   //   writeRetract(settings.retract.homeXY.onProgramEnd);
   // }
-    safeStartPositionChiefenne({ afterToolChange: false });
+  safeStartPositionChiefenne({ afterToolChange: false });
   // <<< chiefenne
-
+    
   writeBlock(mFormat.format(30)); // program end
-  writeln("%");
+  // >>> chiefenne
+  // writeln("%");
+  // <<< chiefenne
 }
 
 // >>>>> INCLUDED FROM include_files/commonFunctions.cpi
