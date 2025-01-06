@@ -292,10 +292,6 @@ function onSection() {
     if (insertToolCall && !isFirstSection()) {
       onCommand(COMMAND_STOP_SPINDLE);
     }
-    // >>> chiefenne
-    // writeRetract(Z); // retract
-    // safeHomePositionChiefenne();
-    // <<< chiefenne
   }
 
   writeln("");
